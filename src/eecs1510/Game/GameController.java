@@ -18,16 +18,20 @@ public class GameController {
     ArrayList<Consumer<MoveResult>> moveCompleteListeners = new ArrayList<>();
     // -----------------------
 
+    private int score = 0;
+
     public void startGame(GameRules rules) throws Randomizer.InvalidSeedException {
         //Start a game with the specified rules
         this.rules = rules;
         board = new Cell[rules.getBoardSize()][rules.getBoardSize()];
 
+        score = 0;
+
         if(rules.getSeed().isEmpty()){
             rules.setSeed(Randomizer.randomSeed());
         }
 
-        randomizer = new Randomizer(rules.getSeed());
+        randomizer = new Randomizer(rules.getSeed().replaceAll("^[\"\']+", "").replaceAll("[\"\']+$", "").replaceAll("\\s", "").toUpperCase());
 
         placeRandom();
         for(int i=0; i<rules.getTilesAddedPerTurn(); i++){
@@ -125,6 +129,8 @@ public class GameController {
             setState(newState);
             boolean lost = placeRandom();
             doMoveComplete(new MoveResult(totalMerged, totalMergedValue));
+            score += totalMergedValue;
+
             if(lost){
                 //TODO: doGameLost
             }
@@ -229,5 +235,9 @@ public class GameController {
 
     public GameRules getRules() {
         return rules;
+    }
+
+    public int getScore() {
+        return score;
     }
 }

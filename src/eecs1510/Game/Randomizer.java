@@ -64,6 +64,7 @@ public class Randomizer
         {
             if (VALID_SEED_CHARS.indexOf(c) == -1)
             {
+                System.err.println("Invalid char in seed: " + c);
                 return false;
             }
         }

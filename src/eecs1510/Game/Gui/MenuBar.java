@@ -1,6 +1,7 @@
 package eecs1510.Game.Gui;
 
 import eecs1510.Game.Gui.Screen.GameScreen;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
@@ -63,7 +64,9 @@ public class MenuBar extends ToolBar {
         score = new Label("0");
 
         controller.getGameController().onMoveComplete(MoveResult -> {
-            //TODO: Update Score
+            Platform.runLater(() -> {
+                score.setText(String.valueOf(controller.getGameController().getScore()));
+            });
         });
 
         Pane rightSpacer = new Pane();
