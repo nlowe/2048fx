@@ -46,7 +46,9 @@ public class HelpScreen extends ControlledScreen{
 
         grid.getRowConstraints().addAll(normal, normal, normal, expand);
 
-        grid.add(new Label("Help & About"), 0, 0);
+        Label title = new Label("Help & About");
+        title.getStyleClass().add("title-label");
+        grid.add(title, 0, 0);
         Label about = new Label("2048fx by Nathan Lowe is a clone of the game 2048 by " +
                 "Gabriele Cirulli and is based on 1024 by Veewo Studio (which is " +
                 "conceptually similar to Threes by Asher Vollmer) written in Java " +
@@ -59,11 +61,13 @@ public class HelpScreen extends ControlledScreen{
         grid.add(new Label("2048fx is Licensed under the MIT License"), 0, 2);
         TextArea mit = new TextArea();
         mit.setEditable(false);
-        mit.setText(getLicenseContent("licenses/MIT.txt"));
+        mit.setText(getLicenseContent("res/licenses/MIT.txt"));
         mit.setWrapText(false);
         grid.add(mit, 0, 3);
 
-        grid.add(new Label("Controls"), 1, 0);
+        Label controls = new Label("Controls");
+        controls.getStyleClass().add("title-label");
+        grid.add(controls, 1, 0);
         grid.add(new KeyBindingsPane(controller.getKeyBindings()), 1, 1); //TODO: Use existing keybindings
 
         Label ccLabel = new Label("Icons used in 2048fx are from the Material Design Project by Google. Licensed under the " +
@@ -73,7 +77,7 @@ public class HelpScreen extends ControlledScreen{
         TextArea cc = new TextArea();
         cc.setEditable(false);
         cc.setWrapText(false);
-        cc.setText(getLicenseContent("licenses/CC-BY-4.0.txt"));
+        cc.setText(getLicenseContent("res/licenses/CC-BY-4.0.txt"));
         grid.add(cc, 1, 3);
 
         this.getChildren().add(grid);

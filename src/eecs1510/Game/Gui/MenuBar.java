@@ -44,16 +44,16 @@ public class MenuBar extends ToolBar {
 
         this.setPrefHeight(40);
 
-        Button menu = createButton("icons/ic_menu_black_24dp.png", "Open Menu", (e) -> {
+        Button menu = createButton("res/icons/ic_menu_black_24dp.png", "Open Menu", (e) -> {
             controller.displayMainMenuScreen();
         });
 
-        Button saveGame = createButton("icons/ic_save_black_24dp.png", "Save Game", (e) -> {
+        Button saveGame = createButton("res/icons/ic_save_black_24dp.png", "Save Game", (e) -> {
             System.out.println("FIXME: TODO: Save Game");
         });
         saveGame.setDisable(true);
 
-        Button newGame  = createButton("icons/ic_add_box_black_24dp.png", "New Game", (e) -> {
+        Button newGame  = createButton("res/icons/ic_add_box_black_24dp.png", "New Game", (e) -> {
             controller.displayNewGameScreen();
         });
 
@@ -72,21 +72,21 @@ public class MenuBar extends ToolBar {
         Pane rightSpacer = new Pane();
         HBox.setHgrow(rightSpacer, Priority.ALWAYS);
 
-        Button undo = createButton("icons/ic_undo_black_24dp.png", "Undo Last Move", (e) -> {
+        Button undo = createButton("res/icons/ic_undo_black_24dp.png", "Undo Last Move", (e) -> {
             System.out.println("FIXME: TODO: Undo");
         });
         undo.setDisable(true);
 
-        Button redo = createButton("icons/ic_redo_black_24dp.png", "Redo Previously Undone Move", (e) -> {
+        Button redo = createButton("res/icons/ic_redo_black_24dp.png", "Redo Previously Undone Move", (e) -> {
             System.out.println("FIXME: TODO: Redo");
         });
         redo.setDisable(true);
 
-        Button help = createButton("icons/ic_help_black_24dp.png", "Help", (e) -> {
+        Button help = createButton("res/icons/ic_help_black_24dp.png", "Help", (e) -> {
             controller.displayHelpScreen();
         });
 
-        Button prefs = createButton("icons/ic_settings_black_24dp.png", "Preferences", (e) -> {
+        Button prefs = createButton("res/icons/ic_settings_black_24dp.png", "Preferences", (e) -> {
             System.out.println("FIXME: TODO: Preferences");
         });
 

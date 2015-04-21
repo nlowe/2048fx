@@ -37,6 +37,9 @@ public class MainWindow extends Application {
         root.setCenter(new WelcomeScreen(this));
 
         gameScene = new Scene(root, 800, 600);
+
+        gameScene.getStylesheets().add("eecs1510/Game/Gui/res/theme.css");
+
         primaryStage.setMinHeight(480);
         primaryStage.setMinWidth(640);
         primaryStage.setScene(gameScene);

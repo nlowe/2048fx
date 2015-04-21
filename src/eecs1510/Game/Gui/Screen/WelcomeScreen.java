@@ -29,7 +29,7 @@ public class WelcomeScreen extends ControlledScreen {
 
 
         WelcomeButton play = new WelcomeButton(
-                new Image(MainWindow.class.getResourceAsStream("icons/ic_gamepad_black_36dp.png")),
+                new Image(MainWindow.class.getResourceAsStream("res/icons/ic_gamepad_black_36dp.png")),
                 "Play",
                 "Start a new Game"
         );
@@ -37,7 +37,7 @@ public class WelcomeScreen extends ControlledScreen {
         grid.add(play, 0, 0);
 
         WelcomeButton resume = new WelcomeButton(
-                new Image(MainWindow.class.getResourceAsStream("icons/ic_folder_open_black_36dp.png")),
+                new Image(MainWindow.class.getResourceAsStream("res/icons/ic_folder_open_black_36dp.png")),
                 "Continue",
                 "Resume a previously started game"
         );
@@ -46,7 +46,7 @@ public class WelcomeScreen extends ControlledScreen {
         grid.add(resume, 0, 1);
 
         WelcomeButton race = new WelcomeButton(
-                new Image(MainWindow.class.getResourceAsStream("icons/ic_flag_black_36dp.png")),
+                new Image(MainWindow.class.getResourceAsStream("res/icons/ic_flag_black_36dp.png")),
                 "Race",
                 "Play the same seed as a friend. First to 2048 wins!"
         );

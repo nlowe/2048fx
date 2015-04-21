@@ -19,10 +19,14 @@ public class WelcomeButton extends Button{
     public WelcomeButton(Image icon, String title, String description){
         super();
 
+        getStyleClass().add("welcome-button");
+
         setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
         this.title = new Label(title);
+        this.title.getStyleClass().add("welcome-button-title");
         this.description = new Label(description);
+        this.description.getStyleClass().add("welcome-button-description");
 
         imageView = new ImageView();
         imageView.setImage(icon);
