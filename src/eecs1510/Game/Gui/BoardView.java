@@ -2,8 +2,10 @@ package eecs1510.Game.Gui;
 
 import eecs1510.Game.Cell;
 import eecs1510.Game.GameController;
+import eecs1510.Game.Rules;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -11,15 +13,18 @@ import javafx.scene.paint.Color;
 /**
  * Created by nathan on 4/11/15
  */
-public class BoardRenderer extends Pane{
+public class BoardView extends Pane{
 
     private final MainWindow controller;
     private final GameController gameController;
     private final Canvas canvas;
 
-    public BoardRenderer(MainWindow controller){
+    public BoardView(MainWindow controller){
         super();
-        setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+
+        //Computed max size (4 cells of 132 pixels each + 5 boarders at 18 pixels each)
+        setMinSize(618, 618);
+        setMaxSize(618, 618);
 
         this.controller = controller;
         this.gameController = controller.getGameController();
@@ -37,13 +42,12 @@ public class BoardRenderer extends Pane{
         canvas.setFocusTraversable(true);
         canvas.addEventFilter(MouseEvent.ANY, (e) -> canvas.requestFocus());
         canvas.setOnKeyReleased(e -> {
-            if(controller.getKeyBindings().handleKey(e)){
+            if(controller.getKeyManager().handleKey(e)){
                 e.consume();
             }
         });
 
         canvas.requestFocus();
-
 
         this.gameController.onMoveComplete((move) -> draw());
     }
@@ -56,24 +60,20 @@ public class BoardRenderer extends Pane{
     }
 
     private void draw(){
-        if(gameController.isGameActive()){
-            double w = getWidth();
-            double h = getHeight();
+        double w = getWidth();
+        double h = getHeight();
 
-            System.out.println("DRAW ON " + w + "x" + h + " canvas");
+        System.out.println("DRAW ON " + w + "x" + h + " canvas");
 
-            GraphicsContext g = canvas.getGraphicsContext2D();
-            g.clearRect(0, 0, w, h);
+        GraphicsContext g = canvas.getGraphicsContext2D();
+        g.clearRect(0, 0, w, h);
 
-            drawCells(w, h, g);
-            drawBorders(w, h, g);
-        }else{
-            System.out.println("Game inactive!");
-        }
+        drawCells(w, h, g);
+        drawBorders(w, h, g);
     }
 
     private void drawBorders(double w, double h, GraphicsContext g){
-        int size = gameController.getRules().getBoardSize();
+        int size = Rules.BOARD_SIZE;
         g.setStroke(Color.BLACK);
         g.setLineWidth(2);
 
@@ -86,7 +86,7 @@ public class BoardRenderer extends Pane{
     }
 
     private void drawCells(double w, double h, GraphicsContext g){
-        int size = gameController.getRules().getBoardSize();
+        int size = Rules.BOARD_SIZE;
         g.setFill(Color.RED);
 
         for(int row=0; row < size; row++){
@@ -112,4 +112,9 @@ public class BoardRenderer extends Pane{
     public void forceDraw() {
         draw();
     }
+
+    public void refocus(){
+        canvas.requestFocus();
+    }
+
 }

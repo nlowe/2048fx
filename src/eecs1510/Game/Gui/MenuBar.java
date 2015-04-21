@@ -1,6 +1,5 @@
 package eecs1510.Game.Gui;
 
-import eecs1510.Game.Gui.Screen.GameScreen;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,6 +18,7 @@ import javafx.scene.layout.Priority;
 public class MenuBar extends ToolBar {
 
     private Label score;
+    private Label best;
     private final MainWindow controller;
 
     private Button createButton(String resourcePath, String tooltip, EventHandler<ActionEvent> eventHandler){
@@ -44,17 +44,16 @@ public class MenuBar extends ToolBar {
 
         this.setPrefHeight(40);
 
-        Button menu = createButton("res/icons/ic_menu_black_24dp.png", "Open Menu", (e) -> {
-            controller.displayMainMenuScreen();
+        Button loadGame = createButton("res/icons/ic_folder_open_black_24dp.png", "Open Menu", (e) -> {
+            System.out.println("FIXME: TODO: Load Game");
         });
 
         Button saveGame = createButton("res/icons/ic_save_black_24dp.png", "Save Game", (e) -> {
             System.out.println("FIXME: TODO: Save Game");
         });
-        saveGame.setDisable(true);
 
         Button newGame  = createButton("res/icons/ic_add_box_black_24dp.png", "New Game", (e) -> {
-            controller.displayNewGameScreen();
+            System.out.println("FIXME: TODO: Start new game");
         });
 
         Pane leftSpacer = new Pane();
@@ -62,6 +61,8 @@ public class MenuBar extends ToolBar {
 
         Label scoreLabel = new Label("Score:");
         score = new Label("0");
+        Label bestLabel = new Label("Best:");
+        best = new Label("0");
 
         controller.getGameController().onMoveComplete(MoveResult -> {
             Platform.runLater(() -> {
@@ -75,36 +76,34 @@ public class MenuBar extends ToolBar {
         Button undo = createButton("res/icons/ic_undo_black_24dp.png", "Undo Last Move", (e) -> {
             System.out.println("FIXME: TODO: Undo");
         });
-        undo.setDisable(true);
 
         Button redo = createButton("res/icons/ic_redo_black_24dp.png", "Redo Previously Undone Move", (e) -> {
             System.out.println("FIXME: TODO: Redo");
         });
-        redo.setDisable(true);
 
         Button help = createButton("res/icons/ic_help_black_24dp.png", "Help", (e) -> {
-            controller.displayHelpScreen();
+            controller.showHelpDialog();
         });
 
-        Button prefs = createButton("res/icons/ic_settings_black_24dp.png", "Preferences", (e) -> {
-            System.out.println("FIXME: TODO: Preferences");
-        });
-
-        this.getItems().addAll(menu, new Separator(Orientation.VERTICAL), saveGame, newGame,
-                leftSpacer, scoreLabel, score, rightSpacer,
-                undo, redo, new Separator(Orientation.VERTICAL), help, prefs
+        this.getItems().addAll(loadGame, new Separator(Orientation.VERTICAL), saveGame, newGame,
+                leftSpacer, scoreLabel, score, bestLabel, best, rightSpacer,
+                undo, redo, new Separator(Orientation.VERTICAL), help
         );
 
-        // Hijack key events if a game is being played
+        // Handle key events on the off chance that the menu is focused
         EventHandler<KeyEvent> keyHandler = (e) -> {
-            if(controller.getDisplayedScreen() instanceof GameScreen){
-                if(controller.getKeyBindings().handleKey(e)){
-                    e.consume();
-                }
+            if(controller.getKeyManager().handleKey(e)){
+                e.consume();
             }
         };
 
-        getItems().stream().forEach((node) -> node.setOnKeyTyped(keyHandler));
-        this.setOnKeyTyped(keyHandler);
+        addEventFilter(KeyEvent.KEY_TYPED, keyHandler);
+        getItems().stream().forEach((node) -> {
+            node.addEventFilter(KeyEvent.KEY_TYPED, keyHandler);
+            node.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                // The Game Board should always be focused
+                controller.getBoardRenderer().refocus();
+            });
+        });
     }
 }

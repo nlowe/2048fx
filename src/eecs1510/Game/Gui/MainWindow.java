@@ -1,11 +1,7 @@
 package eecs1510.Game.Gui;
 
 import eecs1510.Game.GameController;
-import eecs1510.Game.GameRules;
-import eecs1510.Game.Gui.Screen.*;
-import eecs1510.Game.Randomizer;
 import javafx.application.Application;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -15,11 +11,13 @@ import javafx.stage.Stage;
  */
 public class MainWindow extends Application {
 
-    private Scene gameScene;
-    private MenuBar menu;
-    private BorderPane root;
+    /** The Game Controller: Responsible for the actual game logic */
     private GameController controller;
-    private KeyBindings keyBindings;
+    /** The Key Manager for the GUI: Handles key events */
+    private KeyManager keyManager;
+    /** The Board View: Displays the board presented by the game controller */
+    private BoardView board;
+    private Stage primaryStage;
 
     public static void main(String[] args){
         Application.launch(args);
@@ -27,70 +25,45 @@ public class MainWindow extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        this.primaryStage = primaryStage;
         controller = new GameController();
-        keyBindings = new KeyBindings(this);
+        keyManager = new KeyManager(this);
 
-        root = new BorderPane();
-        menu = new MenuBar(this);
+        BorderPane root = new BorderPane();
+        MenuBar menu = new MenuBar(this);
         root.setTop(menu);
 
-        root.setCenter(new WelcomeScreen(this));
+        board = new BoardView(this);
+        root.setCenter(board);
 
-        gameScene = new Scene(root, 800, 600);
+        // Create the scene at the needed size
+        Scene gameScene = new Scene(root, 618, menu.getPrefHeight()+618);
 
         gameScene.getStylesheets().add("eecs1510/Game/Gui/res/theme.css");
 
-        primaryStage.setMinHeight(480);
-        primaryStage.setMinWidth(640);
+        primaryStage.setResizable(false);
         primaryStage.setScene(gameScene);
         primaryStage.setTitle("2048fx");
         primaryStage.show();
-    }
-
-    public Node getDisplayedScreen(){
-        return root.getCenter();
-    }
-
-    public void displayNewGameScreen(){
-        if(!(root.getCenter() instanceof NewGameScreen)){
-            root.setCenter(new NewGameScreen(this));
-        }
-    }
-
-    public void displayMainMenuScreen(){
-        if(!(root.getCenter() instanceof WelcomeScreen)){
-            root.setCenter(new WelcomeScreen(this));
-        }
-    }
-
-    public void displayRaceScreen(){
-        if(!(root.getCenter() instanceof RaceScreen)){
-            root.setCenter(new RaceScreen(this));
-        }
-    }
-
-    public void displayHelpScreen(){
-        if(!(root.getCenter() instanceof HelpScreen)){
-            root.setCenter(new HelpScreen(this));
-        }
-    }
-
-    public void play(GameRules rules) {
-        if(!(root.getCenter() instanceof GameScreen)){
-            try {
-                controller.startGame(rules);
-                root.setCenter(new GameScreen(this)); //TODO: Persist
-            } catch(Randomizer.InvalidSeedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public GameController getGameController() {
         return controller;
     }
 
-    public KeyBindings getKeyBindings() {
-        return keyBindings;
+    public BoardView getBoardRenderer() {
+        return board;
+    }
+
+    public KeyManager getKeyManager() {
+        return keyManager;
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    public void showHelpDialog(){
+        new HelpDialog(this).show();
     }
 }

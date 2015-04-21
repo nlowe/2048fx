@@ -2,6 +2,7 @@ package eecs1510.Game;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.function.Consumer;
 
 /**
@@ -9,9 +10,9 @@ import java.util.function.Consumer;
  */
 public class GameController {
 
-    private GameRules rules;
+
     private Cell[][] board;
-    private Randomizer randomizer;
+    private Random randomizer;
 
     // --- Listener Stores----
     ArrayList<SimpleListener> gameWonListeners = new ArrayList<>();
@@ -20,27 +21,20 @@ public class GameController {
 
     private int score = 0;
 
-    public void startGame(GameRules rules) throws Randomizer.InvalidSeedException {
+    public GameController(){
+        startNewGame();
+    }
+
+    public void startNewGame(){
         //Start a game with the specified rules
-        this.rules = rules;
-        board = new Cell[rules.getBoardSize()][rules.getBoardSize()];
+        board = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
 
         score = 0;
 
-        if(rules.getSeed().isEmpty()){
-            rules.setSeed(Randomizer.randomSeed());
-        }
-
-        randomizer = new Randomizer(rules.getSeed().replaceAll("^[\"\']+", "").replaceAll("[\"\']+$", "").replaceAll("\\s", "").toUpperCase());
+        randomizer = new Random();
 
         placeRandom();
-        for(int i=0; i<rules.getTilesAddedPerTurn(); i++){
-            placeRandom();
-        }
-    }
-
-    public boolean isGameActive(){
-        return board != null && rules != null && randomizer != null;
+        placeRandom();
     }
 
     public Cell cellAt(int row, int col){
@@ -48,9 +42,9 @@ public class GameController {
     }
 
     private Cell[] slice(int column){
-        Cell[] result = new Cell[rules.getBoardSize()];
+        Cell[] result = new Cell[Rules.BOARD_SIZE];
 
-        for(int i=0; i<rules.getBoardSize(); i++){
+        for(int i=0; i< Rules.BOARD_SIZE; i++){
             result[i] = board[i][column];
         }
 
@@ -66,7 +60,7 @@ public class GameController {
         //If there is an active game, execute a move in the direction specified
 
         boolean LTR = direction == Direction.NORTH || direction == Direction.WEST;
-        int size = rules.getBoardSize();
+        int size = Rules.BOARD_SIZE;
 
         int totalMerged = 0;
         int totalMergedValue = 0;
@@ -165,8 +159,8 @@ public class GameController {
     }
 
     private void setState(Cell[][] state){
-        for(int row = 0; row < rules.getBoardSize(); row++){
-            for(int col = 0; col < rules.getBoardSize(); col++){
+        for(int row = 0; row < Rules.BOARD_SIZE; row++){
+            for(int col = 0; col < Rules.BOARD_SIZE; col++){
                 Cell c = state[row][col];
 
                 board[row][col] = state[row][col];
@@ -185,9 +179,9 @@ public class GameController {
             return false;
         }
 
-        int initialValue = randomizer.next() >= rules.getFourRatio() ? 4 : 2;
+        int initialValue = randomizer.nextDouble() >= Rules.FOUR_RATIO ? 4 : 2;
 
-        int[] cell = freeCells.get((int)(randomizer.next() * freeCells.size()));
+        int[] cell = freeCells.get(randomizer.nextInt(freeCells.size()));
         int row = cell[0];
         int col = cell[1];
 
@@ -198,8 +192,8 @@ public class GameController {
     public ArrayList<int[]> getFreeCells(){
         ArrayList<int[]> results = new ArrayList<>();
 
-        for(int row = 0; row < rules.getBoardSize(); row++){
-            for(int col = 0; col < rules.getBoardSize(); col++){
+        for(int row = 0; row < Rules.BOARD_SIZE; row++){
+            for(int col = 0; col < Rules.BOARD_SIZE; col++){
                 if(board[row][col] == null){
                     results.add(new int[]{row, col});
                 }
@@ -211,10 +205,6 @@ public class GameController {
 
     public void undoMove(){
         //If there is an active game, undo the most recent move
-    }
-
-    public void redoMove(){
-        //If there is an active game, redo the most recently undone move
     }
 
     public void onGameWon(SimpleListener listener){
@@ -231,10 +221,6 @@ public class GameController {
 
     private void doGameWon(){
         gameWonListeners.parallelStream().forEach((SimpleListener::listen));
-    }
-
-    public GameRules getRules() {
-        return rules;
     }
 
     public int getScore() {
