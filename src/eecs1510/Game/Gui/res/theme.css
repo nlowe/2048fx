@@ -21,9 +21,9 @@
 }
 
 .cell-view-label {
-    -fx-fill: #fff;
+    -fx-fill: #f9f6f2;
 }
 
 .cell-view-label.dark-text {
-    -fx-fill: #000;
+    -fx-fill: #776e65;
 }

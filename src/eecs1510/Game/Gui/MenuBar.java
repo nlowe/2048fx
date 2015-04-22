@@ -1,6 +1,7 @@
 package eecs1510.Game.Gui;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
@@ -67,11 +68,9 @@ public class MenuBar extends ToolBar {
         Label bestLabel = new Label("Best:");
         best = new Label("0");
 
-        controller.getGameController().onMoveComplete(MoveResult -> {
-            Platform.runLater(() -> {
-                score.setText(String.valueOf(controller.getGameController().getScore()));
-            });
-        });
+        turns.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().turnCountProperty()));
+        score.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().scoreProperty()));
+        best.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().highScoreProperty()));
 
         Pane rightSpacer = new Pane();
         HBox.setHgrow(rightSpacer, Priority.ALWAYS);

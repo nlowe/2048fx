@@ -1,5 +1,7 @@
 package eecs1510.Game;
 
+import javafx.application.Platform;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -13,23 +15,25 @@ public class GameController {
 
     private Cell[][] board;
     private Random randomizer;
+    private StatsManager statsManager;
 
     // --- Listener Stores----
     ArrayList<SimpleListener> gameWonListeners = new ArrayList<>();
     ArrayList<Consumer<MoveResult>> moveCompleteListeners = new ArrayList<>();
     // -----------------------
 
-    private int score = 0;
-
     public GameController(){
+        statsManager = new StatsManager();
+        onMoveComplete((move) -> {
+            Platform.runLater(() -> statsManager.applyMove(move));
+        });
+
         startNewGame();
     }
 
     public void startNewGame(){
         //Start a game with the specified rules
         board = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
-
-        score = 0;
 
         randomizer = new Random();
 
@@ -125,7 +129,6 @@ public class GameController {
             setState(newState);
             boolean lost = placeRandom();
             doMoveComplete(new MoveResult(totalMerged, totalMergedValue));
-            score += totalMergedValue;
 
             if(lost){
                 //TODO: doGameLost
@@ -216,14 +219,14 @@ public class GameController {
     }
 
     private void doMoveComplete(MoveResult move){
-        moveCompleteListeners.parallelStream().forEach((l) -> l.accept(move));
+        moveCompleteListeners.stream().forEach((l) -> l.accept(move));
     }
 
     private void doGameWon(){
-        gameWonListeners.parallelStream().forEach((SimpleListener::listen));
+        gameWonListeners.stream().forEach((SimpleListener::listen));
     }
 
-    public int getScore() {
-        return score;
+    public StatsManager getStatsManager(){
+        return statsManager;
     }
 }
