@@ -1,8 +1,6 @@
 package eecs1510.Game.Gui;
 
 import eecs1510.Game.Cell;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
@@ -30,27 +28,33 @@ public class CellView extends Pane{
     }
 
     private final Cell model;
-    private final Text label;
 
     public CellView(Cell model){
+        getStyleClass().add("cell-view");
+
         this.model = model;
 
         String labelText = String.valueOf(model.getCellValue());
 
-        label = new Text(labelText);
-        double fontSize = (132d / (double)labelText.length()) - 10;
-        System.out.println("Font PX: " + fontSize);
-        label.setStyle(
-                "-fx-font-size: " + fontSize + "px;\n" +
-                (model.getCellValue() <= 4 ? "-fx-fill: #000;" : "-fx-fill: #fff;")
-        );
+        Text label = new Text(labelText);
 
-        //TODO: Figure out better layouts for fonts. This is inconsistent
-        double offset = (132.0 / 2.0 - (fontSize / labelText.length()) / 4.0);
-        System.out.println("Layout: " + String.valueOf(offset));
-        label.setLayoutX(offset);
-        label.setLayoutY(132.0 - 20 - label.prefHeight(132) / 2.0);
+        double textWidth = label.getLayoutBounds().getWidth();
+        double textHeight = label.getLayoutBounds().getHeight();
 
+        double aspectRatio = textWidth / textHeight;
+
+        double scaledWidth = (132.0 - 80.0)/textWidth;
+        double scaledHeight = (132.0 - 80.0)/textHeight;
+
+        label.setScaleX(scaledWidth > scaledHeight ? scaledWidth : scaledWidth / aspectRatio);
+        label.setScaleY(scaledHeight > scaledWidth ? scaledHeight : scaledHeight / aspectRatio);
+
+        label.setStyle(model.getCellValue() <= 4 ? "-fx-fill: #000;" : "-fx-fill: #fff;");
+
+        //TODO: Works fine for two digets, but screws up three or more digits
+        label.setLayoutX(132.0 / 2.0 - label.getScaleX() / 2.0);
+        //TODO: Where did this fudge factor of 6 come from?
+        label.setLayoutY(132.0 / 2.0 - label.getScaleY() / 2.0 + 6);
         getChildren().add(label);
 
         int colorCode = getColorCodeForValue(model.getCellValue());

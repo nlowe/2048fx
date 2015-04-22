@@ -26,17 +26,18 @@ public class BoardView extends Pane{
 
         this.controller = controller;
 
-        // Add Dividers
-        for(int i=0; i<=Rules.BOARD_SIZE; i++){
-            Line row = new Line(9, (i * 132) + (i*18) + 9, 609, (i * 132) + (i*18) + 9);
-            row.setStrokeWidth(18);
-            row.getStyleClass().add("board-line");
+        for(int row = 0; row < Rules.BOARD_SIZE; row++){
+            for(int col=0; col < Rules.BOARD_SIZE; col++){
+                Pane emptyCell = new Pane();
+                emptyCell.getStyleClass().add("empty-cell-view");
 
-            Line col = new Line((i * 132) + (i*18) + 9, 9, (i * 132) + (i*18) + 9, 609);
-            col.setStrokeWidth(18);
-            col.getStyleClass().add("board-line");
+                emptyCell.setLayoutX((col * 132) + (col * 18) + 18);
+                emptyCell.setLayoutY((row * 132) + (row * 18) + 18);
+                emptyCell.setMaxSize(132, 132);
+                emptyCell.setMinSize(132, 132);
 
-            getChildren().addAll(row, col);
+                getChildren().add(emptyCell);
+            }
         }
 
         // Events

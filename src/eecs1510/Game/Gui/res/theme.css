@@ -8,9 +8,14 @@
 }
 
 .board {
-    -fx-background-color: #ccc0b3;
+    -fx-background-color: #bbada0;
 }
 
-.board-line {
-    -fx-stroke: #bbada0;
+.cell-view, .empty-cell-view {
+    -fx-border-radius: 8 8 8 8;
+    -fx-background-radius: 8 8 8 8;
+}
+
+.empty-cell-view {
+    -fx-background-color: #ccc0b3;
 }

@@ -144,8 +144,6 @@ public class GameController {
             Cell a = source[idx];
             Cell b = source[next];
 
-            System.out.println("Comparing " + a.toString() + " to " + b.toString());
-
             if(a.getCellValue() == b.getCellValue()){
                 System.out.println("MERGE");
                 source[next] = new Cell(a, b, a.getCellValue() * 2, b.getBoardX(), b.getBoardY());
