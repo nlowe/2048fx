@@ -19,3 +19,16 @@
 .empty-cell-view {
     -fx-background-color: #ccc0b3;
 }
+
+.cell-view.glow {
+    /* TODO: Needs cleaning up */
+    -fx-effect: dropshadow(one-pass-box, gold, 10, 0.0, 0, 0);
+}
+
+.cell-view-label {
+    -fx-fill: #fff;
+}
+
+.cell-view-label.dark-text {
+    -fx-fill: #000;
+}

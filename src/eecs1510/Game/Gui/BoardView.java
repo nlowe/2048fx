@@ -4,7 +4,6 @@ import eecs1510.Game.Cell;
 import eecs1510.Game.GameController;
 import eecs1510.Game.Rules;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
 
