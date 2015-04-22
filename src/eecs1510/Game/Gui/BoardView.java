@@ -3,12 +3,10 @@ package eecs1510.Game.Gui;
 import eecs1510.Game.Cell;
 import eecs1510.Game.GameController;
 import eecs1510.Game.Rules;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+
+import java.util.ArrayList;
 
 /**
  * Created by nathan on 4/11/15
@@ -16,105 +14,69 @@ import javafx.scene.paint.Color;
 public class BoardView extends Pane{
 
     private final MainWindow controller;
-    private final GameController gameController;
-    private final Canvas canvas;
+    private ArrayList<CellView> cellViews = new ArrayList<>();
 
     public BoardView(MainWindow controller){
         super();
 
+        getStyleClass().add("board");
+
         //Computed max size (4 cells of 132 pixels each + 5 boarders at 18 pixels each)
-        setMinSize(618, 618);
-        setMaxSize(618, 618);
+        setMaxSize(618, 627);
 
         this.controller = controller;
-        this.gameController = controller.getGameController();
-        canvas = new Canvas();
 
-        getChildren().add(canvas);
+        // Add Dividers
+        for(int i=0; i<=Rules.BOARD_SIZE; i++){
+            Line row = new Line(9, (i * 132) + (i*18) + 9, 609, (i * 132) + (i*18) + 9);
+            row.setStrokeWidth(18);
+            row.getStyleClass().add("board-line");
 
-        // Make the Canvas fill it's parent
-        canvas.setLayoutX(0);
-        canvas.setLayoutY(0);
-        widthProperty().addListener((resize) -> doResize());
-        heightProperty().addListener((resize) -> doResize());
+            Line col = new Line((i * 132) + (i*18) + 9, 9, (i * 132) + (i*18) + 9, 609);
+            col.setStrokeWidth(18);
+            col.getStyleClass().add("board-line");
+
+            getChildren().addAll(row, col);
+        }
 
         // Events
-        canvas.setFocusTraversable(true);
-        canvas.addEventFilter(MouseEvent.ANY, (e) -> canvas.requestFocus());
-        canvas.setOnKeyReleased(e -> {
+        setOnKeyReleased(e -> {
             if(controller.getKeyManager().handleKey(e)){
                 e.consume();
             }
         });
 
-        canvas.requestFocus();
+        updateView();
+        requestFocus();
 
-        this.gameController.onMoveComplete((move) -> draw());
+        controller.getGameController().onMoveComplete((move) -> updateView());
     }
 
-    private void doResize(){
-        canvas.setWidth(getWidth());
-        canvas.setHeight(getHeight());
+    private void updateView() {
+        System.out.println("Updating Cell Views");
 
-        draw();
-    }
+        GameController game = controller.getGameController();
 
-    private void draw(){
-        double w = getWidth();
-        double h = getHeight();
+        getChildren().removeAll(cellViews);
+        cellViews.clear();
 
-        System.out.println("DRAW ON " + w + "x" + h + " canvas");
+        for(int row = 0; row < Rules.BOARD_SIZE; row++){
+            for(int col=0; col < Rules.BOARD_SIZE; col++){
+                Cell c = game.cellAt(row, col);
+                if(c == null) continue;
 
-        GraphicsContext g = canvas.getGraphicsContext2D();
-        g.clearRect(0, 0, w, h);
-
-        drawCells(w, h, g);
-        drawBorders(w, h, g);
-    }
-
-    private void drawBorders(double w, double h, GraphicsContext g){
-        int size = Rules.BOARD_SIZE;
-        g.setStroke(Color.BLACK);
-        g.setLineWidth(2);
-
-        for(int row = 0; row <= size; row++){
-            for(int col = 0; col <= size; col++){
-                g.strokeLine(col * (w/size), 0, col * (w/size), h);
-            }
-            g.strokeLine(0, row * (h/size), w, row * (h/size));
-        }
-    }
-
-    private void drawCells(double w, double h, GraphicsContext g){
-        int size = Rules.BOARD_SIZE;
-        g.setFill(Color.RED);
-
-        for(int row=0; row < size; row++){
-            for(int col = 0; col < size; col++){
-                Cell c = gameController.cellAt(row, col);
-
-                if(c != null){
-                    double cx = col * (w/size) + 1;
-                    double cy = row * (h/size) + 1;
-
-                    double cw = (w/(size))-2;
-                    double ch = (h/(size))-2;
-                    g.setFill(Color.RED);
-                    g.fillRect(cx, cy, cw, ch);
-
-                    g.setFill(Color.BLACK);
-                    g.fillText(String.valueOf(c.getCellValue()), cx + cw/2, cy+ch/2);
-                }
+                CellView view = new CellView(c);
+                view.setLayoutX((col * 132) + (col*18) + 18);
+                view.setLayoutY((row * 132) + (row*18) + 18);
+                view.setMaxSize(132, 132);
+                view.setMinSize(132, 132);
+                cellViews.add(view);
             }
         }
+
+        getChildren().addAll(cellViews);
+        layoutChildren();
     }
 
-    public void forceDraw() {
-        draw();
-    }
-
-    public void refocus(){
-        canvas.requestFocus();
-    }
 
 }

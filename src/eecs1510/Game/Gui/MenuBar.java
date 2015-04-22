@@ -17,6 +17,7 @@ import javafx.scene.layout.Priority;
  */
 public class MenuBar extends ToolBar {
 
+    private Label turns;
     private Label score;
     private Label best;
     private final MainWindow controller;
@@ -59,6 +60,8 @@ public class MenuBar extends ToolBar {
         Pane leftSpacer = new Pane();
         HBox.setHgrow(leftSpacer, Priority.ALWAYS);
 
+        Label turnsLabel = new Label("Turns:");
+        turns = new Label("0");
         Label scoreLabel = new Label("Score:");
         score = new Label("0");
         Label bestLabel = new Label("Best:");
@@ -85,8 +88,8 @@ public class MenuBar extends ToolBar {
             controller.showHelpDialog();
         });
 
-        this.getItems().addAll(loadGame, new Separator(Orientation.VERTICAL), saveGame, newGame,
-                leftSpacer, scoreLabel, score, bestLabel, best, rightSpacer,
+        this.getItems().addAll(loadGame, saveGame, new Separator(Orientation.VERTICAL), newGame,
+                leftSpacer, turnsLabel, turns, scoreLabel, score, bestLabel, best, rightSpacer,
                 undo, redo, new Separator(Orientation.VERTICAL), help
         );
 
@@ -102,7 +105,7 @@ public class MenuBar extends ToolBar {
             node.addEventFilter(KeyEvent.KEY_TYPED, keyHandler);
             node.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 // The Game Board should always be focused
-                controller.getBoardRenderer().refocus();
+                controller.getBoardRenderer().requestFocus();
             });
         });
     }

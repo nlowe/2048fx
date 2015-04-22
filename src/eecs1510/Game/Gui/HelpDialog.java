@@ -58,8 +58,8 @@ public class HelpDialog extends Stage {
                 "Controls:\n" +
                 "\tMovement: Arrow Keys\n" +
                 "\tUndo: Ctrl+Z\n" +
-                "\tSave Game: Alt+S" +
-                "\tLoad Game: Alt+L" +
+                "\tSave Game: Alt+S\n" +
+                "\tLoad Game: Alt+L\n" +
                 "\tDisplay This Dialog: Alt+H\n" +
                 "\tQuit Game: Alt+K"
         );

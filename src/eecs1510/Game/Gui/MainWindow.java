@@ -37,7 +37,8 @@ public class MainWindow extends Application {
         root.setCenter(board);
 
         // Create the scene at the needed size
-        Scene gameScene = new Scene(root, 618, menu.getPrefHeight()+618);
+        // TODO: Figure out why this fudge factor of 6 is needed for the height
+        Scene gameScene = new Scene(root, 618, menu.getPrefHeight()+618+6);
 
         gameScene.getStylesheets().add("eecs1510/Game/Gui/res/theme.css");
 

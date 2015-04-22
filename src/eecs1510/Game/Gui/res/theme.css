@@ -6,3 +6,11 @@
 .license-label {
     -fx-font: 8pt "Monospace";
 }
+
+.board {
+    -fx-background-color: #ccc0b3;
+}
+
+.board-line {
+    -fx-stroke: #bbada0;
+}

@@ -57,6 +57,8 @@ public class GameController {
 
     //TODO: This needs refactored / optimized
     public void takeMove(Direction direction){
+        System.out.println("Take Move: " + direction);
+
         //If there is an active game, execute a move in the direction specified
 
         boolean LTR = direction == Direction.NORTH || direction == Direction.WEST;
