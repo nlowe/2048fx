@@ -56,7 +56,7 @@ public class MenuBar extends ToolBar {
         Button newGame  = createButton("res/icons/ic_add_box_black_24dp.png", "New Game", (e) -> {
             //FIXME: Prompt to save
             controller.getGameController().startNewGame();
-            controller.getBoardRenderer().updateView();
+            controller.getBoardRenderer().updateView(null);
         });
 
         Pane leftSpacer = new Pane();

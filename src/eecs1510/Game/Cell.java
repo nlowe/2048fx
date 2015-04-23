@@ -15,6 +15,8 @@ public class Cell {
     private final Cell father;
     private final Cell mother;
 
+    private int age = 0;
+
     public Cell(Cell father, Cell mother, int value, int x, int y){
         this.father = father;
         this.mother = mother;
@@ -28,8 +30,6 @@ public class Cell {
     public void move(int x, int y){
         boardX.setValue(x);
         boardY.setValue(y);
-
-        //TODO: Animate?
     }
 
     public Cell getFather() {
@@ -67,5 +67,17 @@ public class Cell {
     @Override
     public String toString(){
         return "{x: " + getBoardX() + ", y: " + getBoardY() + ", value: " + getCellValue() + "}";
+    }
+
+    public int getAge(){
+        return age;
+    }
+
+    public void survive(){
+        age++;
+    }
+
+    public boolean isOriginCell(){
+        return father == null && mother == null;
     }
 }

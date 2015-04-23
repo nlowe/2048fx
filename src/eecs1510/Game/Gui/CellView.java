@@ -25,6 +25,9 @@ public class CellView extends Pane{
     private final Cell model;
 
     public CellView(Cell model){
+        setMaxSize(132, 132);
+        setMinSize(132, 132);
+
         this.model = model;
 
         getStyleClass().add("cell-view");

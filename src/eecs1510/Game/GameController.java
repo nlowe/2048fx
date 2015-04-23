@@ -127,6 +127,9 @@ public class GameController {
         }else{
             System.out.println("Switching to new state");
             setState(newState);
+
+            Arrays.stream(board).flatMap(Arrays::stream).filter((c) -> c != null).forEach(Cell::survive);
+
             boolean lost = placeRandom();
             doMoveComplete(new MoveResult(totalMerged, totalMergedValue));
 

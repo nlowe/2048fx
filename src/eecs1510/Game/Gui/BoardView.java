@@ -2,6 +2,7 @@ package eecs1510.Game.Gui;
 
 import eecs1510.Game.Cell;
 import eecs1510.Game.GameController;
+import eecs1510.Game.MoveResult;
 import eecs1510.Game.Rules;
 import javafx.animation.*;
 import javafx.geometry.Point2D;
@@ -53,18 +54,20 @@ public class BoardView extends Pane{
 
         // Events
         setOnKeyReleased(e -> {
-            if(controller.getKeyManager().handleKey(e)){
+            if (controller.getKeyManager().handleKey(e)) {
                 e.consume();
             }
         });
 
-        updateView();
+        updateView(null);
         requestFocus();
 
-        controller.getGameController().onMoveComplete((move) -> updateView());
+        controller.getGameController().onMoveComplete(this::updateView);
     }
 
-    protected void updateView() {
+    protected void updateView(MoveResult moveResult) {
+        if(moveResult != null && moveResult.isInvalid()) return; //No need to update for invalid moves
+
         System.out.println("Updating Cell Views");
 
         GameController game = controller.getGameController();
@@ -80,13 +83,27 @@ public class BoardView extends Pane{
                 CellView view = new CellView(c);
                 view.setLayoutX((col * 132) + (col*18) + 18);
                 view.setLayoutY((row * 132) + (row*18) + 18);
-                view.setMaxSize(132, 132);
-                view.setMinSize(132, 132);
+
                 cellViews.add(view);
+                getChildren().add(view);
+
+                if(c.isOriginCell() && c.getAge() == 0){
+                    //Newly Created Cell that was spawned randomly
+                    ScaleTransition scale = new ScaleTransition();
+                    scale.setDuration(Duration.millis(150));
+                    scale.setNode(view);
+
+                    scale.setFromX(0.0);
+                    scale.setFromY(0.0);
+
+                    scale.setToX(1.0);
+                    scale.setToY(1.0);
+
+                    scale.play();
+                }
             }
         }
 
-        getChildren().addAll(cellViews);
         layoutChildren();
     }
 
