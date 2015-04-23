@@ -54,7 +54,8 @@ public class CellView extends Pane{
         label.setLayoutY(132.0 / 2.0 - label.getScaleY() / 2.0 + 6);
         getChildren().add(label);
 
-        int colorCode = CELL_COLORS[(int)(Math.log(model.getCellValue()) / Math.log(2))];
+        int colorIndex = (int)(Math.log(model.getCellValue()) / Math.log(2));
+        int colorCode = CELL_COLORS[colorIndex > CELL_COLORS.length ? 0 : colorIndex];
         setStyle("-fx-background-color: #" + Integer.toHexString(colorCode));
     }
 

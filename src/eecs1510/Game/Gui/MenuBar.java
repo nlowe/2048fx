@@ -1,6 +1,5 @@
 package eecs1510.Game.Gui;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -47,15 +46,17 @@ public class MenuBar extends ToolBar {
         this.setPrefHeight(40);
 
         Button loadGame = createButton("res/icons/ic_folder_open_black_24dp.png", "Open Menu", (e) -> {
-            System.out.println("FIXME: TODO: Load Game");
+            controller.getBoardRenderer().displayNotification("Open Game Not Implemented!", 2, NotificationType.ERROR);
         });
 
         Button saveGame = createButton("res/icons/ic_save_black_24dp.png", "Save Game", (e) -> {
-            System.out.println("FIXME: TODO: Save Game");
+            controller.getBoardRenderer().displayNotification("Save Game Not Implemented!", 2, NotificationType.ERROR);
         });
 
         Button newGame  = createButton("res/icons/ic_add_box_black_24dp.png", "New Game", (e) -> {
-            System.out.println("FIXME: TODO: Start new game");
+            //FIXME: Prompt to save
+            controller.getGameController().startNewGame();
+            controller.getBoardRenderer().updateView();
         });
 
         Pane leftSpacer = new Pane();
@@ -76,11 +77,7 @@ public class MenuBar extends ToolBar {
         HBox.setHgrow(rightSpacer, Priority.ALWAYS);
 
         Button undo = createButton("res/icons/ic_undo_black_24dp.png", "Undo Last Move", (e) -> {
-            System.out.println("FIXME: TODO: Undo");
-        });
-
-        Button redo = createButton("res/icons/ic_redo_black_24dp.png", "Redo Previously Undone Move", (e) -> {
-            System.out.println("FIXME: TODO: Redo");
+            controller.getBoardRenderer().displayNotification("Undo Not Implemented!", 2, NotificationType.ERROR);
         });
 
         Button help = createButton("res/icons/ic_help_black_24dp.png", "Help", (e) -> {
@@ -89,7 +86,7 @@ public class MenuBar extends ToolBar {
 
         this.getItems().addAll(loadGame, saveGame, new Separator(Orientation.VERTICAL), newGame,
                 leftSpacer, turnsLabel, turns, scoreLabel, score, bestLabel, best, rightSpacer,
-                undo, redo, new Separator(Orientation.VERTICAL), help
+                undo, new Separator(Orientation.VERTICAL), help
         );
 
         // Handle key events on the off chance that the menu is focused

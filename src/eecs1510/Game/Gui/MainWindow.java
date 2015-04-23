@@ -3,7 +3,7 @@ package eecs1510.Game.Gui;
 import eecs1510.Game.GameController;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**

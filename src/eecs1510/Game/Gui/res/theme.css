@@ -17,13 +17,36 @@
 
 .cell-view.glow {
     /* TODO: Needs cleaning up */
-    -fx-effect: dropshadow(one-pass-box, gold, 10, 0.0, 0, 0);
+    -fx-effect: dropshadow(one-pass-box, gold, 32, 0.0, 0, 0);
 }
 
 .cell-view-label {
+    -fx-font: bold 18 Monospace;
     -fx-fill: #f9f6f2;
 }
 
 .cell-view-label.dark-text {
     -fx-fill: #776e65;
+}
+
+.notification {
+    -fx-background-color: rgba(17, 26, 207, 0.5);
+}
+
+.notification .label{
+    -fx-font-size: 18pt;
+    -fx-font-weight: bold;
+    -fx-font-family: "Monospace";
+}
+
+.notification.warning {
+    -fx-background-color: #d6be37be;
+}
+
+.notification.error {
+    -fx-background-color: #d64937be;
+}
+
+.notification.warning .label, .notification.error .label{
+    -fx-text-fill: white;
 }
