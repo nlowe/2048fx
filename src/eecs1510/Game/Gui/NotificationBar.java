@@ -47,4 +47,8 @@ public class NotificationBar extends GridPane{
     public int getDuration(){
         return duration;
     }
+
+    public NotificationType getType() {
+        return type;
+    }
 }

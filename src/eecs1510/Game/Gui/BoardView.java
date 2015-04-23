@@ -62,7 +62,13 @@ public class BoardView extends Pane{
         updateView(null);
         requestFocus();
 
-        controller.getGameController().onMoveComplete(this::updateView);
+        controller.getGameController().onMoveComplete((moveResult) -> {
+            if(moveResult.isInvalid()){
+                displayNotification("Invalid Move!", 3, NotificationType.WARNING);
+            }else{
+                updateView(moveResult);
+            }
+        });
     }
 
     protected void updateView(MoveResult moveResult) {

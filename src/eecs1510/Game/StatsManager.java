@@ -20,16 +20,18 @@ public class StatsManager {
         setHighScore(highScore);
 
         score.addListener(((observable, oldValue, newValue) -> {
-            if(newValue.intValue() > getHighScore()){
+            if (newValue.intValue() > getHighScore()) {
                 setHighScore(newValue.intValue());
             }
         }));
     }
 
     public void applyMove(MoveResult move){
-        setScore(getScore() + move.mergeValue);
-        setTurnCount(getTurnCount() + 1);
-        setTotalMerged(getTotalMerged() + move.mergeCount);
+        if(!move.isInvalid()){
+            setScore(getScore() + move.mergeValue);
+            setTurnCount(getTurnCount() + 1);
+            setTotalMerged(getTotalMerged() + move.mergeCount);
+        }
     }
 
     public int getScore() {
