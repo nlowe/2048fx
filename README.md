@@ -2,19 +2,23 @@
 A JavaFX implementation of the game [2048](http://gabrielecirulli.github.io/2048/) by Gabriele Cirulli.
 
 ### Building
-You will need Java 8, which should come with JavaFX. I'm working on getting a
-gradle build script written.
+You will need Java 8, which should come with JavaFX. If you have [apache ant](https://ant.apache.org)
+you can use the included build script, which will create `2048fx.jar` and run it for you:
 
-> **Note**: This is a very early build. Many things are broken, many things are yet to be implemented
+```
+ant run
+```
+
+If you're on mac or windows, you'll likely have to edit `jdk.home.1.8` in `2048fx.properties` to point to
+a JDK 8 installation.
 
 ### Roadmap
 
 - [x] Ability to play the game
-- [ ] Functional Help / Options menu
-- [ ] Seeded Games
+- [x] Help Menu
 - [ ] Saving / Loading games
-- [ ] A sensible theme
-- [ ] Animations
+- [ ] A sensible theme - In progress!
+- [x] Animations
 - [ ] And much more!
 
 ### License

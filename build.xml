@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="2048fx" default="all">
+  
+  
+  <property file="2048fx.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+
+  <property name="skip.tests" value="true"/>
+
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.bundle/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.ear"/>
+    <include name="*.apk"/>
+    <include name="*.zip"/>
+    <include name="*.swc"/>
+    <include name="*.ane"/>
+    <include name="*.egg"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+    <exclude name="**/?*.aj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.8" value="${jdk.home.1.8}/bin"/>
+  <path id="jdk.classpath.1.8">
+    <fileset dir="${jdk.home.1.8}">
+      <include name="../default/jre/lib/rt.jar"/>
+      <include name="../default/jre/lib/plugin.jar"/>
+      <include name="../default/jre/lib/management-agent.jar"/>
+      <include name="../default/jre/lib/resources.jar"/>
+      <include name="../default/jre/lib/jsse.jar"/>
+      <include name="../default/jre/lib/jfr.jar"/>
+      <include name="../default/jre/lib/deploy.jar"/>
+      <include name="../default/jre/lib/javaws.jar"/>
+      <include name="../default/jre/lib/charsets.jar"/>
+      <include name="../default/jre/lib/jfxswt.jar"/>
+      <include name="../default/jre/lib/jce.jar"/>
+      <include name="../default/jre/lib/ext/dnsns.jar"/>
+      <include name="../default/jre/lib/ext/sunec.jar"/>
+      <include name="../default/jre/lib/ext/jfxrt.jar"/>
+      <include name="../default/jre/lib/ext/zipfs.jar"/>
+      <include name="../default/jre/lib/ext/sunjce_provider.jar"/>
+      <include name="../default/jre/lib/ext/cldrdata.jar"/>
+      <include name="../default/jre/lib/ext/nashorn.jar"/>
+      <include name="../default/jre/lib/ext/sunpkcs11.jar"/>
+      <include name="../default/jre/lib/ext/localedata.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.8}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.8}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.8"/>
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module 2048fx -->
+  
+  <dirname property="module.2048fx.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.2048fx" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.2048fx" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.2048fx" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.2048fx" value="-encoding UTF-8 -source 8 ${compiler.args}"/>
+  
+  <property name="2048fx.output.dir" value="${module.2048fx.basedir}/out/production/2048fx"/>
+  <property name="2048fx.testoutput.dir" value="${module.2048fx.basedir}/out/test/2048fx"/>
+  
+  <path id="2048fx.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="2048fx.module.production.classpath">
+    <path refid="${module.jdk.classpath.2048fx}"/>
+  </path>
+  
+  <path id="2048fx.runtime.production.module.classpath">
+    <pathelement location="${2048fx.output.dir}"/>
+  </path>
+  
+  <path id="2048fx.module.classpath">
+    <path refid="${module.jdk.classpath.2048fx}"/>
+    <pathelement location="${2048fx.output.dir}"/>
+  </path>
+  
+  <path id="2048fx.runtime.module.classpath">
+    <pathelement location="${2048fx.testoutput.dir}"/>
+    <pathelement location="${2048fx.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.2048fx">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.2048fx">
+    <patternset refid="excluded.from.module.2048fx"/>
+  </patternset>
+  
+  <path id="2048fx.module.sourcepath">
+    <dirset dir="${module.2048fx.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.2048fx" depends="compile.module.2048fx.production,compile.module.2048fx.tests" description="Compile module 2048fx"/>
+  
+  <target name="compile.module.2048fx.production" description="Compile module 2048fx; production classes">
+    <mkdir dir="${2048fx.output.dir}"/>
+    <javac destdir="${2048fx.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.2048fx}/javac">
+      <compilerarg line="${compiler.args.2048fx}"/>
+      <bootclasspath refid="2048fx.module.bootclasspath"/>
+      <classpath refid="2048fx.module.production.classpath"/>
+      <src refid="2048fx.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.2048fx"/>
+    </javac>
+    
+    <copy todir="${2048fx.output.dir}">
+      <fileset dir="${module.2048fx.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.2048fx.tests" depends="compile.module.2048fx.production" description="compile module 2048fx; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.2048fx" description="cleanup module">
+    <delete dir="${2048fx.output.dir}"/>
+    <delete dir="${2048fx.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.2048fx" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.2048fx" description="build all modules"/>
+
+  <target name="jar" depends="build.modules">
+    <jar destfile="2048fx.jar" basedir="${2048fx.output.dir}">
+      <manifest>
+        <attribute name="Main-Class" value="eecs1510.Game.Gui.MainWindow"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="run" depends="jar">
+    <java jar="2048fx.jar" fork="true"/>
+  </target>
+  
+  <target name="all" depends="jar" description="build all"/>
+</project>
