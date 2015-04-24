@@ -115,7 +115,7 @@ public class BoardView extends Pane{
                     System.out.println(c + " was newly merged");
 
                     CellView fatherView = new CellView(c.getFather());
-                    Point2D fatherPoint = boardToScene(fatherView.model.getBoardX(), fatherView.model.getBoardY()); 
+                    Point2D fatherPoint = boardToScene(fatherView.model.getBoardX(), fatherView.model.getBoardY());
                     fatherView.setLayoutX(fatherPoint.getX());
                     fatherView.setLayoutY(fatherPoint.getY());
                     

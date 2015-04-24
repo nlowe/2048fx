@@ -19,6 +19,10 @@ public class Cell {
 
     private int age = 0;
 
+    public Cell(Cell father, Cell mother, int value) {
+        this(father, mother, value, mother.getBoardX(), mother.getBoardY());
+    }
+
     public Cell(Cell father, Cell mother, int value, int x, int y){
         this.father = father;
         this.mother = mother;

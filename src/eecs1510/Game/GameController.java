@@ -75,6 +75,7 @@ public class GameController {
         if(direction == Direction.NORTH || direction == Direction.SOUTH){
             for(int column=0; column < size; column++){
                 Cell[] filteredColumn = stripNull(slice(column));
+                if(filteredColumn.length == 0) continue;
 
                 // If there's more than one cell, try merging
                 if(filteredColumn.length > 1){
@@ -99,6 +100,7 @@ public class GameController {
         }else{
             for(int row = 0; row < size; row++){
                 Cell[] filteredRow = stripNull(board[row]);
+                if(filteredRow.length == 0) continue;
 
                 // If there's more than one cell, try merging
                 if(filteredRow.length > 1){
@@ -139,27 +141,30 @@ public class GameController {
         }
     }
 
+    //TODO: This needs refactored / optimized
     public MoveResult merge(Cell[] source, boolean LTR){
         int totalMerged = 0;
         int totalMergedValue = 0;
 
-        int idx = LTR ? 0 : source.length-1;
-        do{
-            int next = idx + (LTR ? 1 : -1);
-
-            Cell a = source[idx];
-            Cell b = source[next];
-
-            if(a.getCellValue() == b.getCellValue()){
-                System.out.println("MERGE");
-                source[next] = new Cell(a, b, a.getCellValue() * 2, b.getBoardX(), b.getBoardY());
-                source[idx] = null;
-                totalMerged++;
-                totalMergedValue += b.getCellValue();
+        if(LTR){
+            for(int i=0; i < source.length - 1; i++){
+                if(source[i].getCellValue() == source[i+1].getCellValue()){
+                    source[i+1] = new Cell(source[i], source[i+1], source[i].getCellValue()*2);
+                    source[i] = null;
+                    totalMerged++;
+                    totalMergedValue += source[++i].getCellValue();
+                }
             }
-
-            idx = next;
-        }while(0 < idx && idx < source.length-1);
+        }else{
+            for(int i = source.length - 1; i >= 1; i--){
+                if(source[i].getCellValue() == source[i-1].getCellValue()){
+                    source[i-1] = new Cell(source[i], source[i-1], source[i].getCellValue()*2);
+                    source[i] = null;
+                    totalMerged++;
+                    totalMergedValue += source[--i].getCellValue();
+                }
+            }
+        }
 
         return new MoveResult(totalMerged, totalMergedValue);
     }
