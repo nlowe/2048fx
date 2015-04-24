@@ -63,9 +63,9 @@ public class BoardView extends Pane{
         requestFocus();
 
         controller.getGameController().onMoveComplete((moveResult) -> {
-            if(moveResult.isInvalid()){
+            if (moveResult.isInvalid()) {
                 displayNotification("Invalid Move!", 3, NotificationType.WARNING);
-            }else{
+            } else {
                 updateView(moveResult);
             }
         });
@@ -87,8 +87,12 @@ public class BoardView extends Pane{
                 if(c == null) continue;
 
                 CellView view = new CellView(c);
-                view.setLayoutX((col * 132) + (col*18) + 18);
-                view.setLayoutY((row * 132) + (row*18) + 18);
+
+                Point2D prev = boardToScene(c.getLastBoardX(), c.getLastBoardY());
+                Point2D next = boardToScene(col, row);
+                
+                view.setLayoutX(next.getX());
+                view.setLayoutY(next.getY());
 
                 cellViews.add(view);
                 getChildren().add(view);
@@ -106,11 +110,85 @@ public class BoardView extends Pane{
                     scale.setToY(1.0);
 
                     scale.play();
+                }else if(!c.isOriginCell() && c.getAge() == 1){
+                    //Newly Merged Cell
+                    System.out.println(c + " was newly merged");
+
+                    CellView fatherView = new CellView(c.getFather());
+                    Point2D fatherPoint = boardToScene(fatherView.model.getBoardX(), fatherView.model.getBoardY()); 
+                    fatherView.setLayoutX(fatherPoint.getX());
+                    fatherView.setLayoutY(fatherPoint.getY());
+                    
+                    CellView motherView = new CellView(c.getMother());
+                    Point2D motherPoint = boardToScene(motherView.model.getBoardX(), motherView.model.getBoardY());
+                    motherView.setLayoutX(motherPoint.getX());
+                    motherView.setLayoutY(motherPoint.getY());
+
+                    cellViews.add(fatherView);
+                    cellViews.add(motherView);
+                    getChildren().addAll(fatherView, motherView);
+                    
+                    view.setScaleX(0.0);
+                    view.setScaleY(0.0);
+                    view.setLayoutX(next.getX());
+                    view.setLayoutY(next.getY());
+
+                    Timeline move = new Timeline();
+                    move.setCycleCount(1);
+
+                    move.getKeyFrames().addAll(
+                            new KeyFrame(Duration.millis(150), new KeyValue(fatherView.layoutXProperty(), next.getX(), Interpolator.LINEAR)),
+                            new KeyFrame(Duration.millis(150), new KeyValue(fatherView.layoutYProperty(), next.getY(), Interpolator.LINEAR)),
+                            new KeyFrame(Duration.millis(150), new KeyValue(motherView.layoutXProperty(), next.getX(), Interpolator.LINEAR)),
+                            new KeyFrame(Duration.millis(150), new KeyValue(motherView.layoutYProperty(), next.getY(), Interpolator.LINEAR))
+                    );
+
+                    move.setOnFinished((e) -> {
+                        ScaleTransition up = new ScaleTransition(Duration.millis(75), view);
+                        up.setFromX(0);
+                        up.setFromY(0);
+                        up.setToX(1.2);
+                        up.setToY(1.2);
+
+                        ScaleTransition restore = new ScaleTransition(Duration.millis(75), view);
+                        restore.setFromX(1.2);
+                        restore.setFromY(1.2);
+                        restore.setToX(1.0);
+                        restore.setToY(1.0);
+
+                        cellViews.remove(fatherView);
+                        cellViews.remove(motherView);
+                        getChildren().removeAll(fatherView, motherView);
+
+                        SequentialTransition scale = new SequentialTransition(up, restore);
+                        scale.setCycleCount(1);
+                        scale.play();
+                    });
+
+                    move.play();
+                }else{
+                    // Regular movement
+
+                    view.setLayoutX(prev.getX());
+                    view.setLayoutY(prev.getY());
+
+                    Timeline move = new Timeline();
+                    move.setCycleCount(1);
+
+                    move.getKeyFrames().addAll(
+                            new KeyFrame(Duration.millis(150), new KeyValue(view.layoutXProperty(), next.getX(), Interpolator.LINEAR)),
+                            new KeyFrame(Duration.millis(150), new KeyValue(view.layoutYProperty(), next.getY(), Interpolator.LINEAR))
+                    );
+                    move.play();
                 }
             }
         }
 
         layoutChildren();
+    }
+
+    public Point2D boardToScene(int x, int y){
+        return new Point2D((x * 132) + (x*18) + 18, (y * 132) + (y*18) + 18);
     }
 
     public void displayNotification(String text, int duration, NotificationType priority){

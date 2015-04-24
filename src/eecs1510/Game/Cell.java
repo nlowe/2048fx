@@ -9,7 +9,9 @@ import javafx.beans.property.SimpleIntegerProperty;
  */
 public class Cell {
 
+    private IntegerProperty lastBoardX;
     private IntegerProperty boardX;
+    private IntegerProperty lastBoardY;
     private IntegerProperty boardY;
     private ReadOnlyIntegerProperty cellValue;
     private final Cell father;
@@ -21,14 +23,18 @@ public class Cell {
         this.father = father;
         this.mother = mother;
 
+        lastBoardX = new SimpleIntegerProperty(x);
         boardX = new SimpleIntegerProperty(x);
+        lastBoardY = new SimpleIntegerProperty(y);
         boardY = new SimpleIntegerProperty(y);
 
         cellValue = new SimpleIntegerProperty(value);
     }
 
     public void move(int x, int y){
+        lastBoardX.setValue(getBoardX());
         boardX.setValue(x);
+        lastBoardY.setValue(getBoardY());
         boardY.setValue(y);
     }
 
@@ -79,5 +85,21 @@ public class Cell {
 
     public boolean isOriginCell(){
         return father == null && mother == null;
+    }
+
+    public int getLastBoardX() {
+        return lastBoardX.get();
+    }
+
+    public IntegerProperty lastBoardXProperty() {
+        return lastBoardX;
+    }
+
+    public int getLastBoardY() {
+        return lastBoardY.get();
+    }
+
+    public IntegerProperty lastBoardYProperty() {
+        return lastBoardY;
     }
 }

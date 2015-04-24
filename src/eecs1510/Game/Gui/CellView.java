@@ -22,7 +22,7 @@ public class CellView extends Pane{
             //TODO: 512, 1024, 2048
     };
 
-    private final Cell model;
+    protected final Cell model;
 
     public CellView(Cell model){
         setMaxSize(132, 132);

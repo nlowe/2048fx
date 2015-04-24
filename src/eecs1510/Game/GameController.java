@@ -171,7 +171,7 @@ public class GameController {
 
                 board[row][col] = state[row][col];
 
-                if(c != null && (c.getBoardX() != col || c.getBoardY() != row)){
+                if(c != null){
                     c.move(col, row);
                 }
             }
