@@ -9,11 +9,11 @@ import javafx.beans.property.SimpleIntegerProperty;
  */
 public class Cell {
 
-    private IntegerProperty lastBoardX;
-    private IntegerProperty boardX;
-    private IntegerProperty lastBoardY;
-    private IntegerProperty boardY;
-    private ReadOnlyIntegerProperty cellValue;
+    private final IntegerProperty lastBoardX;
+    private final IntegerProperty boardX;
+    private final IntegerProperty lastBoardY;
+    private final IntegerProperty boardY;
+    private final ReadOnlyIntegerProperty cellValue;
     private final Cell father;
     private final Cell mother;
 

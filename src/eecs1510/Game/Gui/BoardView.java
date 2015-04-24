@@ -21,9 +21,9 @@ import java.util.Stack;
 public class BoardView extends Pane{
 
     private final MainWindow controller;
-    private ArrayList<CellView> cellViews = new ArrayList<>();
+    private final ArrayList<CellView> cellViews = new ArrayList<>();
 
-    private Stack<NotificationBar> notifications = new Stack<>();
+    private final Stack<NotificationBar> notifications = new Stack<>();
     private SequentialTransition notificationTransition = null;
 
     public BoardView(MainWindow controller){
@@ -74,8 +74,6 @@ public class BoardView extends Pane{
     protected void updateView(MoveResult moveResult) {
         if(moveResult != null && moveResult.isInvalid()) return; //No need to update for invalid moves
 
-        System.out.println("Updating Cell Views");
-
         GameController game = controller.getGameController();
 
         getChildren().removeAll(cellViews);
@@ -112,7 +110,6 @@ public class BoardView extends Pane{
                     scale.play();
                 }else if(!c.isOriginCell() && c.getAge() == 1){
                     //Newly Merged Cell
-                    System.out.println(c + " was newly merged");
 
                     CellView fatherView = new CellView(c.getFather());
                     Point2D fatherPoint = boardToScene(fatherView.model.getBoardX(), fatherView.model.getBoardY());
@@ -226,8 +223,6 @@ public class BoardView extends Pane{
 
             notificationTransition.setCycleCount(1);
             notificationTransition.play();
-        }else{
-            System.out.println("Not stopped or no remaining notifications");
         }
     }
 }

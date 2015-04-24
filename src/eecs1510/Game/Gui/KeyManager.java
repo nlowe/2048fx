@@ -17,8 +17,6 @@ public class KeyManager {
     }
 
     public boolean handleKey(KeyEvent e){
-        System.out.println("Key Event: " + e.getText());
-
         if(e.isControlDown() && e.getCode().equals(KeyCode.Z)){
             controller.getGameController().undoMove();
             return true;

@@ -15,11 +15,11 @@ public class GameController {
 
     private Cell[][] board;
     private Random randomizer;
-    private StatsManager statsManager;
+    private final StatsManager statsManager;
 
     // --- Listener Stores----
-    ArrayList<SimpleListener> gameWonListeners = new ArrayList<>();
-    ArrayList<Consumer<MoveResult>> moveCompleteListeners = new ArrayList<>();
+    private final ArrayList<SimpleListener> gameWonListeners = new ArrayList<>();
+    private final ArrayList<Consumer<MoveResult>> moveCompleteListeners = new ArrayList<>();
     // -----------------------
 
     public GameController(){
@@ -61,8 +61,6 @@ public class GameController {
 
     //TODO: This needs refactored / optimized
     public void takeMove(Direction direction){
-        System.out.println("Take Move: " + direction);
-
         //If there is an active game, execute a move in the direction specified
 
         boolean LTR = direction == Direction.NORTH || direction == Direction.WEST;
@@ -127,7 +125,6 @@ public class GameController {
         if(totalMerged == 0 && Arrays.deepEquals(board, newState)){
             doMoveComplete(MoveResult.invalid());
         }else{
-            System.out.println("Switching to new state");
             setState(newState);
 
             Arrays.stream(board).flatMap(Arrays::stream).filter((c) -> c != null).forEach(Cell::survive);

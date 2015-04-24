@@ -17,11 +17,6 @@ import javafx.scene.layout.Priority;
  */
 public class MenuBar extends ToolBar {
 
-    private Label turns;
-    private Label score;
-    private Label best;
-    private final MainWindow controller;
-
     private Button createButton(String resourcePath, String tooltip, EventHandler<ActionEvent> eventHandler){
         Button b = new Button("", new ImageView(new Image(MainWindow.class.getResourceAsStream(resourcePath))));
 
@@ -41,7 +36,7 @@ public class MenuBar extends ToolBar {
     public MenuBar(MainWindow controller){
         super();
 
-        this.controller = controller;
+        MainWindow controller1 = controller;
 
         this.setPrefHeight(40);
 
@@ -63,11 +58,11 @@ public class MenuBar extends ToolBar {
         HBox.setHgrow(leftSpacer, Priority.ALWAYS);
 
         Label turnsLabel = new Label("Turns:");
-        turns = new Label("0");
+        Label turns = new Label("0");
         Label scoreLabel = new Label("Score:");
-        score = new Label("0");
+        Label score = new Label("0");
         Label bestLabel = new Label("Best:");
-        best = new Label("0");
+        Label best = new Label("0");
 
         turns.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().turnCountProperty()));
         score.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().scoreProperty()));

@@ -12,8 +12,8 @@ import javafx.scene.layout.Priority;
  */
 public class NotificationBar extends GridPane{
 
-    private int duration;
-    private NotificationType type;
+    private final int duration;
+    private final NotificationType type;
 
     public NotificationBar(String text){
         this(text, 15, NotificationType.INFO);
