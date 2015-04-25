@@ -2,17 +2,24 @@ package eecs1510.Game;
 
 import eecs1510.Game.Gui.MainWindow;
 import eecs1510.Game.Gui.NotificationType;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 
 /**
  * Created by nathan on 4/22/15
  */
 public class StatsManager {
-    private IntegerProperty score = new SimpleIntegerProperty(0);
-    private IntegerProperty turnCount = new SimpleIntegerProperty(0);
-    private IntegerProperty totalMerged = new SimpleIntegerProperty(0);
-    private IntegerProperty highScore = new SimpleIntegerProperty(0);
+
+    private final RingBuffer<Integer> score = new RingBuffer<>(10);
+    private final ReadOnlyIntegerWrapper scoreProperty = new ReadOnlyIntegerWrapper(0);
+
+    private final RingBuffer<Integer> turnCount = new RingBuffer<>(10);
+    private final ReadOnlyIntegerWrapper turnCountProperty = new ReadOnlyIntegerWrapper(0);
+
+    private final RingBuffer<Integer> totalMerged = new RingBuffer<>(10);
+    private final ReadOnlyIntegerWrapper totalMergedProperty = new ReadOnlyIntegerWrapper(0);
+
+    private final ReadOnlyIntegerWrapper highScoreProperty = new ReadOnlyIntegerWrapper();
 
     private boolean notifiedHighScore = false;
 
@@ -21,11 +28,12 @@ public class StatsManager {
     }
 
     public StatsManager(MainWindow controller, int highScore){
-        setHighScore(highScore);
 
-        score.addListener(((observable, oldValue, newValue) -> {
+        highScoreProperty.set(highScore);
+
+        scoreProperty.addListener(((observable, oldValue, newValue) -> {
             if (newValue.intValue() > getHighScore()) {
-                setHighScore(newValue.intValue());
+                highScoreProperty.set(newValue.intValue());
                 if (!notifiedHighScore) {
                     controller.getBoardRenderer().displayNotification("New High Score: " + newValue.intValue(), 3, NotificationType.INFO);
                     notifiedHighScore = true;
@@ -35,68 +43,70 @@ public class StatsManager {
     }
 
     public void applyMove(MoveResult move){
-        if(!move.isInvalid()){
-            setScore(getScore() + move.mergeValue);
-            setTurnCount(getTurnCount() + 1);
-            setTotalMerged(getTotalMerged() + move.mergeCount);
+        if(move != null && !move.isInvalid()){
+            score.push(getScore() + move.mergeValue);
+            turnCount.push(getTurnCount() + 1);
+            totalMerged.push(getTotalMerged() + move.mergeCount);
+
+            updateProperties();
         }
+    }
+
+    private void updateProperties(){
+        scoreProperty.set(score.count() > 0 ? score.peek() : 0);
+        turnCountProperty.set(turnCount.count() > 0 ? turnCount.peek() : 0);
+        totalMergedProperty.set(totalMerged.count() > 0 ? totalMerged.peek() : 0);
     }
 
     public int getScore() {
-        return score.get();
+        return scoreProperty.get();
     }
 
-    public IntegerProperty scoreProperty() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score.set(score);
+    public ReadOnlyIntegerProperty scorePropertyProperty() {
+        return scoreProperty.getReadOnlyProperty();
     }
 
     public int getTurnCount() {
-        return turnCount.get();
+        return turnCountProperty.get();
     }
 
-    public IntegerProperty turnCountProperty() {
-        return turnCount;
-    }
-
-    public void setTurnCount(int turnCount) {
-        this.turnCount.set(turnCount);
+    public ReadOnlyIntegerProperty turnCountPropertyProperty() {
+        return turnCountProperty.getReadOnlyProperty();
     }
 
     public int getTotalMerged() {
-        return totalMerged.get();
+        return totalMergedProperty.get();
     }
 
-    public IntegerProperty totalMergedProperty() {
-        return totalMerged;
-    }
-
-    public void setTotalMerged(int totalMerged) {
-        this.totalMerged.set(totalMerged);
+    public ReadOnlyIntegerProperty totalMergedPropertyProperty() {
+        return totalMergedProperty.getReadOnlyProperty();
     }
 
     public int getHighScore() {
-        return highScore.get();
+        return highScoreProperty.get();
     }
 
-    public IntegerProperty highScoreProperty() {
-        return highScore;
-    }
-
-    public void setHighScore(int highScore) {
-        this.highScore.set(highScore);
+    public ReadOnlyIntegerProperty highScorePropertyProperty() {
+        return highScoreProperty.getReadOnlyProperty();
     }
 
     public void reset(boolean resetHighScore) {
-        setTurnCount(0);
-        setTotalMerged(0);
-        setScore(0);
+        score.clear();
+        totalMerged.clear();
+        turnCount.clear();
         if(resetHighScore){
-            setHighScore(0);
+            highScoreProperty.set(0);
             notifiedHighScore = false;
         }
+
+        updateProperties();
+    }
+
+    public void rollBack(){
+        score.pop();
+        totalMerged.pop();
+        turnCount.pop();
+
+        updateProperties();
     }
 }
