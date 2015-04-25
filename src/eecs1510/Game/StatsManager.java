@@ -1,5 +1,7 @@
 package eecs1510.Game;
 
+import eecs1510.Game.Gui.MainWindow;
+import eecs1510.Game.Gui.NotificationType;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -12,16 +14,22 @@ public class StatsManager {
     private IntegerProperty totalMerged = new SimpleIntegerProperty(0);
     private IntegerProperty highScore = new SimpleIntegerProperty(0);
 
-    public StatsManager(){
-        this(0);
+    private boolean notifiedHighScore = false;
+
+    public StatsManager(MainWindow controller){
+        this(controller, 0);
     }
 
-    public StatsManager(int highScore){
+    public StatsManager(MainWindow controller, int highScore){
         setHighScore(highScore);
 
         score.addListener(((observable, oldValue, newValue) -> {
             if (newValue.intValue() > getHighScore()) {
                 setHighScore(newValue.intValue());
+                if (!notifiedHighScore) {
+                    controller.getBoardRenderer().displayNotification("New High Score: " + newValue.intValue(), 3, NotificationType.INFO);
+                    notifiedHighScore = true;
+                }
             }
         }));
     }
@@ -80,5 +88,15 @@ public class StatsManager {
 
     public void setHighScore(int highScore) {
         this.highScore.set(highScore);
+    }
+
+    public void reset(boolean resetHighScore) {
+        setTurnCount(0);
+        setTotalMerged(0);
+        setScore(0);
+        if(resetHighScore){
+            setHighScore(0);
+            notifiedHighScore = false;
+        }
     }
 }

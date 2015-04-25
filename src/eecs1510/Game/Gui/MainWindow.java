@@ -26,7 +26,7 @@ public class MainWindow extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
-        controller = new GameController();
+        controller = new GameController(this);
         keyManager = new KeyManager(this);
 
         BorderPane root = new BorderPane();

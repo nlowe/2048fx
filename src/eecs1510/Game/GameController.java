@@ -1,5 +1,6 @@
 package eecs1510.Game;
 
+import eecs1510.Game.Gui.MainWindow;
 import javafx.application.Platform;
 
 import java.util.ArrayList;
@@ -22,8 +23,8 @@ public class GameController {
     private final ArrayList<Consumer<MoveResult>> moveCompleteListeners = new ArrayList<>();
     // -----------------------
 
-    public GameController(){
-        statsManager = new StatsManager();
+    public GameController(MainWindow w){
+        statsManager = new StatsManager(w);
         onMoveComplete((move) -> {
             Platform.runLater(() -> statsManager.applyMove(move));
         });
@@ -32,6 +33,7 @@ public class GameController {
     }
 
     public void startNewGame(){
+        statsManager.reset(true);
         //Start a game with the specified rules
         board = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
 
