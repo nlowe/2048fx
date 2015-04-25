@@ -16,10 +16,12 @@ public class CellView extends Pane{
             0xf2b179, //8
             0xf59563, //16
             0xf67c5f, //32
-            0xf67c5f, //64
+            0xf65e3b, //64
             0xedcf72, //128
             0xedcc61, //256
-            //TODO: 512, 1024, 2048
+            0xedc84f, //512
+            0xedc53f, //1024
+            0xedc22e, //2048
     };
 
     protected final Cell model;
@@ -37,28 +39,24 @@ public class CellView extends Pane{
 
         Text label = new Text(labelText);
         label.getStyleClass().add("cell-view-label");
+        getChildren().add(label);
 
         double textWidth = label.getLayoutBounds().getWidth();
         double textHeight = label.getLayoutBounds().getHeight();
 
-        double aspectRatio = textWidth / textHeight;
+        double scaleFactor = Math.min((132-60)/textWidth, (132-60)/textHeight);
 
-        double scaledWidth = (132.0 - 80.0)/textWidth;
-        double scaledHeight = (132.0 - 80.0)/textHeight;
-
-        label.setScaleX(scaledWidth > scaledHeight ? scaledWidth : scaledWidth / aspectRatio);
-        label.setScaleY(scaledHeight > scaledWidth ? scaledHeight : scaledHeight / aspectRatio);
+        label.setScaleX(scaleFactor);
+        label.setScaleY(scaleFactor);
 
         if(model.getCellValue() <= 4) label.getStyleClass().add("dark-text");
 
-        //TODO: Works fine for two digets, but screws up three or more digits
-        label.setLayoutX(132.0 / 2.0 - label.getScaleX() / 2.0);
-        //TODO: Where did this fudge factor of 6 come from?
-        label.setLayoutY(132.0 / 2.0 - label.getScaleY() / 2.0 + 6);
-        getChildren().add(label);
+        label.setX(132.0 / 2.0 - label.getLayoutBounds().getWidth() / 2.0);
+        //TODO: Where did this fudge factor of 15 come from?
+        label.setY(132.0 / 2.0 - label.getLayoutBounds().getHeight() / 2.0 + 15);
 
         int colorIndex = (int)(Math.log(model.getCellValue()) / Math.log(2));
-        int colorCode = CELL_COLORS[colorIndex > CELL_COLORS.length ? 0 : colorIndex];
+        int colorCode = CELL_COLORS[colorIndex >= CELL_COLORS.length ? 0 : colorIndex];
         setStyle("-fx-background-color: #" + Integer.toHexString(colorCode));
     }
 
