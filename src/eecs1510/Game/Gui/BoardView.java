@@ -25,6 +25,7 @@ public class BoardView extends Pane{
 
     private final Stack<NotificationBar> notifications = new Stack<>();
     private SequentialTransition notificationTransition = null;
+    private volatile NotificationBar notification = null;
 
     public BoardView(MainWindow controller){
         super();
@@ -181,6 +182,10 @@ public class BoardView extends Pane{
             }
         }
 
+        if(notification != null){
+            notification.toFront();
+        }
+
         layoutChildren();
     }
 
@@ -195,29 +200,29 @@ public class BoardView extends Pane{
 
     private void updateDisplayedNotifications(){
         if(notificationTransition == null || notificationTransition.getStatus().equals(Animation.Status.STOPPED) && notifications.size() > 0){
-            NotificationBar b = notifications.pop();
-            getChildren().add(b);
-            b.setLayoutX(0);
-            b.setLayoutY(-100);
+            notification = notifications.pop();
+            getChildren().add(notification);
+            notification.setLayoutX(0);
+            notification.setLayoutY(-100);
 
             Point2D tl = this.localToScene(Point2D.ZERO);
 
             PathTransition in = new PathTransition();
             in.setPath(new Path(new MoveTo(618/2, -100), new LineTo(618/2, tl.getY()+100)));
-            in.setNode(b);
+            in.setNode(notification);
             in.setCycleCount(1);
 
             PathTransition out = new PathTransition();
             out.setPath(new Path(new MoveTo(618/2, tl.getY()+100), new LineTo(618/2, -100)));
-            out.setNode(b);
+            out.setNode(notification);
             out.setCycleCount(1);
 
             notificationTransition = new SequentialTransition(
-                    in, new PauseTransition(Duration.seconds(b.getDuration())), out
+                    in, new PauseTransition(Duration.seconds(notification.getDuration())), out
             );
 
             notificationTransition.setOnFinished((e) -> {
-                getChildren().remove(b);
+                getChildren().remove(notification);
                 updateDisplayedNotifications();
             });
 
