@@ -27,7 +27,7 @@ public class Cell {
     }
 
     public Cell(Cell father, Cell mother, int value, int x, int y){
-        positionHistory = new RingBuffer<>(10);
+        positionHistory = new RingBuffer<>(11);
         positionHistory.push(new Vec2i(x, y));
 
         this.father = father;

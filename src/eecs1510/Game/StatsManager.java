@@ -10,13 +10,13 @@ import javafx.beans.property.ReadOnlyIntegerWrapper;
  */
 public class StatsManager {
 
-    private final RingBuffer<Integer> score = new RingBuffer<>(10);
+    private final RingBuffer<Integer> score = new RingBuffer<>(11);
     private final ReadOnlyIntegerWrapper scoreProperty = new ReadOnlyIntegerWrapper(0);
 
-    private final RingBuffer<Integer> turnCount = new RingBuffer<>(10);
+    private final RingBuffer<Integer> turnCount = new RingBuffer<>(11);
     private final ReadOnlyIntegerWrapper turnCountProperty = new ReadOnlyIntegerWrapper(0);
 
-    private final RingBuffer<Integer> totalMerged = new RingBuffer<>(10);
+    private final RingBuffer<Integer> totalMerged = new RingBuffer<>(11);
     private final ReadOnlyIntegerWrapper totalMergedProperty = new ReadOnlyIntegerWrapper(0);
 
     private final ReadOnlyIntegerWrapper highScoreProperty = new ReadOnlyIntegerWrapper();
