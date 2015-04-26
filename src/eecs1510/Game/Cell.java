@@ -61,11 +61,11 @@ public class Cell {
     }
 
     public boolean rollBack(){
-        if(positionHistory.count() >= 2){
-            positionHistory.pop();
-            Vec2i previousPosition =  positionHistory.pop();
-            move(previousPosition.x, previousPosition.y);
-            return false;
+        if(age >= 1){
+            Vec2i current = positionHistory.pop();           // Remove the current position from the stack
+            lastBoardX.set(current.x);
+            lastBoardY.set(current.y);
+            return --age < 0;
         }else{
             //Newly created or merged cell
             return true;
@@ -106,7 +106,7 @@ public class Cell {
 
     @Override
     public String toString(){
-        return "{x: " + getBoardX() + ", y: " + getBoardY() + ", value: " + getCellValue() + "}";
+        return "{x: " + getBoardX() + ", y: " + getBoardY() + ", value: " + getCellValue() + ", age: " + age + "}";
     }
 
     public int getAge(){
