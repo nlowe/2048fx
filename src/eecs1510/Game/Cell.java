@@ -33,6 +33,10 @@ public class Cell {
         this.father = father;
         this.mother = mother;
 
+        if(father != null && mother != null){
+            age = -1;
+        }
+
         lastBoardX = new SimpleIntegerProperty(x);
         boardX = new ReadOnlyIntegerWrapper(){
             @Override
@@ -61,13 +65,13 @@ public class Cell {
     }
 
     public boolean rollBack(){
-        if(age >= 1){
-            Vec2i current = positionHistory.pop();           // Remove the current position from the stack
+        if(age > 0){
+            Vec2i current = positionHistory.pop();
             lastBoardX.set(current.x);
             lastBoardY.set(current.y);
             return --age < 0;
         }else{
-            //Newly created or merged cell
+            //Newly created cell
             return true;
         }
     }
@@ -106,7 +110,7 @@ public class Cell {
 
     @Override
     public String toString(){
-        return "{x: " + getBoardX() + ", y: " + getBoardY() + ", value: " + getCellValue() + ", age: " + age + "}";
+        return "{x: " + getBoardX() + ", y: " + getBoardY() + ", value: " + getCellValue() + ", age: " + age + ", positionStackSize: " + positionHistory.count() + "}";
     }
 
     public int getAge(){

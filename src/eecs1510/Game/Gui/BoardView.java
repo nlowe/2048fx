@@ -109,7 +109,7 @@ public class BoardView extends Pane{
                     scale.setToY(1.0);
 
                     scale.play();
-                }else if(!c.isOriginCell() && c.getAge() == 1){
+                }else if(!c.isOriginCell() && c.getAge() == 0){
                     //Newly Merged Cell
 
                     CellView fatherView = new CellView(c.getFather());
