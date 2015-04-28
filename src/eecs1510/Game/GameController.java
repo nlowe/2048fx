@@ -23,6 +23,8 @@ public class GameController {
     private final ArrayList<Consumer<MoveResult>> moveCompleteListeners = new ArrayList<>();
     // -----------------------
 
+    private int undoCounter = 0;
+
     public GameController(MainWindow w){
         statsManager = new StatsManager(w);
         onMoveComplete((move) -> {
@@ -33,6 +35,7 @@ public class GameController {
     }
 
     public void startNewGame(){
+        undoCounter = 0;
         statsManager.reset(true);
         //Start a game with the specified rules
         board = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
@@ -41,6 +44,8 @@ public class GameController {
 
         placeRandom();
         placeRandom();
+
+        Arrays.stream(board).flatMap(Arrays::stream).filter((c) -> c != null).forEach(Cell::survive);
     }
 
     public Cell cellAt(int row, int col){
@@ -131,6 +136,8 @@ public class GameController {
 
             Arrays.stream(board).flatMap(Arrays::stream).filter((c) -> c != null).forEach(Cell::survive);
 
+            if(undoCounter < 10) undoCounter++;
+
             boolean lost = placeRandom();
             doMoveComplete(new MoveResult(totalMerged, totalMergedValue));
 
@@ -213,8 +220,42 @@ public class GameController {
         return  results;
     }
 
-    public void undoMove(){
+    public boolean undoMove(){
+        if(undoCounter < 1) return false;
+
         //If there is an active game, undo the most recent move
+        Cell[][] state = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
+        Arrays.stream(board).flatMap(Arrays::stream).filter((cell) -> cell != null).forEach((cell) -> {
+            boolean decompose = cell.rollBack();
+            if (!decompose) {
+                System.out.println(cell + " is at least two generations old, just moving");
+                state[cell.getBoardY()][cell.getBoardX()] = cell;
+            } else {
+                if (!cell.isOriginCell()) {
+
+                    // Return Parents to game board
+                    Cell father = cell.getFather();
+                    father.setMoveFrom(cell.getBoardX(), cell.getBoardY());
+
+                    Cell mother = cell.getMother();
+                    mother.setMoveFrom(cell.getBoardX(), cell.getBoardY());
+
+                    System.out.println("Decomposing " + cell + " into " + father + " and " + mother);
+
+                    state[father.getBoardY()][father.getBoardX()] = father;
+                    state[mother.getBoardY()][mother.getBoardX()] = mother;
+                }else{
+                    System.out.println(cell + " was just added, removing");
+                }
+            }
+        });
+
+        statsManager.rollBack();
+        board = state; //Skip call to setState(...) because cells have already 'moved'
+        doMoveComplete(null);
+        undoCounter--;
+
+        return true;
     }
 
     public void onGameWon(SimpleListener listener){

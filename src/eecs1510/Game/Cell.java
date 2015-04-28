@@ -2,6 +2,7 @@ package eecs1510.Game;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 
 /**
@@ -10,12 +11,14 @@ import javafx.beans.property.SimpleIntegerProperty;
 public class Cell {
 
     private final IntegerProperty lastBoardX;
-    private final IntegerProperty boardX;
+    private final ReadOnlyIntegerProperty boardX;
     private final IntegerProperty lastBoardY;
-    private final IntegerProperty boardY;
+    private final ReadOnlyIntegerProperty boardY;
     private final ReadOnlyIntegerProperty cellValue;
     private final Cell father;
     private final Cell mother;
+
+    private RingBuffer<Vec2i> positionHistory;
 
     private int age = 0;
 
@@ -24,22 +27,53 @@ public class Cell {
     }
 
     public Cell(Cell father, Cell mother, int value, int x, int y){
+        positionHistory = new RingBuffer<>(11);
+        positionHistory.push(new Vec2i(x, y));
+
         this.father = father;
         this.mother = mother;
 
         lastBoardX = new SimpleIntegerProperty(x);
-        boardX = new SimpleIntegerProperty(x);
+        boardX = new ReadOnlyIntegerWrapper(){
+            @Override
+            public int get() {
+                return positionHistory.peek().x;
+            }
+        };
+
         lastBoardY = new SimpleIntegerProperty(y);
-        boardY = new SimpleIntegerProperty(y);
+        boardY = new ReadOnlyIntegerWrapper(){
+            @Override
+            public int get() {
+                return positionHistory.peek().y;
+            }
+        };
 
         cellValue = new SimpleIntegerProperty(value);
     }
 
     public void move(int x, int y){
-        lastBoardX.setValue(getBoardX());
-        boardX.setValue(x);
-        lastBoardY.setValue(getBoardY());
-        boardY.setValue(y);
+        if(positionHistory.count() > 0){
+            setMoveFrom(boardX.get(), boardY.get());
+        }
+        positionHistory.push(new Vec2i(x, y));
+    }
+
+    public boolean rollBack(){
+        if(--age >= 0){
+            if(age == 0 && !isOriginCell()) return true; // Newly Merged
+            Vec2i current = positionHistory.pop();
+            setMoveFrom(current.x, current.y);
+            return false;
+        }else{
+            //Newly created cell
+            return true;
+        }
+    }
+
+    public void setMoveFrom(int x, int y){
+        lastBoardX.set(x);
+        lastBoardY.set(y);
     }
 
     public Cell getFather() {
@@ -62,7 +96,7 @@ public class Cell {
         return boardX.get();
     }
 
-    public IntegerProperty boardXProperty() {
+    public ReadOnlyIntegerProperty boardXProperty() {
         return boardX;
     }
 
@@ -70,13 +104,13 @@ public class Cell {
         return boardY.get();
     }
 
-    public IntegerProperty boardYProperty() {
+    public ReadOnlyIntegerProperty boardYProperty() {
         return boardY;
     }
 
     @Override
     public String toString(){
-        return "{x: " + getBoardX() + ", y: " + getBoardY() + ", value: " + getCellValue() + "}";
+        return "{spawned: " + isOriginCell() + ", x: " + getBoardX() + ", y: " + getBoardY() + ", vx: " + (getBoardX() - getLastBoardX()) + ", vy:" + (getBoardY() - getLastBoardY()) + ", value: " + getCellValue() + ", age: " + age + ", positionStackSize: " + positionHistory.count() + "}";
     }
 
     public int getAge(){
@@ -95,7 +129,7 @@ public class Cell {
         return lastBoardX.get();
     }
 
-    public IntegerProperty lastBoardXProperty() {
+    public ReadOnlyIntegerProperty lastBoardXProperty() {
         return lastBoardX;
     }
 
@@ -103,7 +137,7 @@ public class Cell {
         return lastBoardY.get();
     }
 
-    public IntegerProperty lastBoardYProperty() {
+    public ReadOnlyIntegerProperty lastBoardYProperty() {
         return lastBoardY;
     }
 }

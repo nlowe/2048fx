@@ -36,8 +36,6 @@ public class MenuBar extends ToolBar {
     public MenuBar(MainWindow controller){
         super();
 
-        MainWindow controller1 = controller;
-
         this.setPrefHeight(40);
 
         Button loadGame = createButton("res/icons/ic_folder_open_black_24dp.png", "Open Menu", (e) -> {
@@ -64,15 +62,19 @@ public class MenuBar extends ToolBar {
         Label bestLabel = new Label("Best:");
         Label best = new Label("0");
 
-        turns.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().turnCountProperty()));
-        score.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().scoreProperty()));
-        best.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().highScoreProperty()));
+        turns.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().turnCountPropertyProperty()));
+        score.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().scorePropertyProperty()));
+        best.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().highScorePropertyProperty()));
 
         Pane rightSpacer = new Pane();
         HBox.setHgrow(rightSpacer, Priority.ALWAYS);
 
         Button undo = createButton("res/icons/ic_undo_black_24dp.png", "Undo Last Move", (e) -> {
-            controller.getBoardRenderer().displayNotification("Undo Not Implemented!", 2, NotificationType.ERROR);
+            //controller.getBoardRenderer().displayNotification("Undo Not Implemented!", 2, NotificationType.ERROR);
+            boolean undone = controller.getGameController().undoMove();
+            if(!undone){
+                controller.getBoardRenderer().displayNotification("Can't undo move!", 2, NotificationType.ERROR);
+            }
         });
 
         Button help = createButton("res/icons/ic_help_black_24dp.png", "Help", (e) -> {

@@ -64,7 +64,7 @@ public class BoardView extends Pane{
         requestFocus();
 
         controller.getGameController().onMoveComplete((moveResult) -> {
-            if (moveResult.isInvalid()) {
+            if (moveResult != null && moveResult.isInvalid()) {
                 displayNotification("Invalid Move!", 3, NotificationType.WARNING);
             } else {
                 updateView(moveResult);
@@ -96,7 +96,7 @@ public class BoardView extends Pane{
                 cellViews.add(view);
                 getChildren().add(view);
 
-                if(c.isOriginCell() && c.getAge() == 0){
+                if((controller.getGameController().getStatsManager().isNewGame() && moveResult == null) || (c.isOriginCell() && c.getAge() == 0)){
                     //Newly Created Cell that was spawned randomly
                     ScaleTransition scale = new ScaleTransition();
                     scale.setDuration(Duration.millis(150));

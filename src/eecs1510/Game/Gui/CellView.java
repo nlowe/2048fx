@@ -1,6 +1,7 @@
 package eecs1510.Game.Gui;
 
 import eecs1510.Game.Cell;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
@@ -31,6 +32,7 @@ public class CellView extends Pane{
         setMinSize(132, 132);
 
         this.model = model;
+        Tooltip.install(this, new Tooltip(model.toString()));
 
         getStyleClass().add("cell-view");
         if(model.getCellValue() >= 256) getStyleClass().add("glow");
