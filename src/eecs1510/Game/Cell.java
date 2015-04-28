@@ -5,6 +5,10 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * Created by nathan on 4/11/15
  */
@@ -74,6 +78,63 @@ public class Cell {
     public void setMoveFrom(int x, int y){
         lastBoardX.set(x);
         lastBoardY.set(y);
+    }
+
+    public static Cell readCell(DataInputStream in, int limit) throws IOException {
+        int nextLimit = limit;
+
+        int age = in.readInt();
+        int value = in.readInt();
+
+        RingBuffer<Vec2i> positionHistory = new RingBuffer<>(10);
+
+        int depth = in.readInt();
+        for(int i=0; i<depth; i++){
+            int x = in.readInt();
+            int y = in.readInt();
+
+            positionHistory.push(new Vec2i(x, y));
+            nextLimit--;
+        }
+
+        boolean origin = in.readBoolean();
+
+        Cell father = null;
+        Cell mother = null;
+
+        if(!origin){
+            father = readCell(in, nextLimit);
+            mother = readCell(in, nextLimit);
+        }
+
+        Cell c = new Cell(father, mother, value);
+        c.age = age;
+        c.positionHistory = positionHistory;
+
+        return c;
+    }
+
+    public void storeCell(DataOutputStream out, int limit) throws IOException {
+        int nextLimit = limit;
+
+        out.writeInt(getAge());
+        out.writeInt(getCellValue());
+
+        int depth = positionHistory.count() > limit ? limit : positionHistory.count();
+        out.writeInt(depth);
+        for(int i=0; i<depth; i++){
+            Vec2i pos = positionHistory.getElement(i);
+            out.writeInt(pos.x);
+            out.writeInt(pos.y);
+
+            nextLimit--;
+        }
+
+        out.writeBoolean(isOriginCell());
+        if(!isOriginCell()){
+            father.storeCell(out, nextLimit);
+            mother.storeCell(out, nextLimit);
+        }
     }
 
     public Cell getFather() {

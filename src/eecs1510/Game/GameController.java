@@ -273,7 +273,17 @@ public class GameController {
         return true;
     }
 
-    public void loadGame(){
+    public boolean saveGame(String path){
+        try(DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(path)))){
+
+            return true;
+        }catch(IOException ex){
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public void loadGame(String path){
 
     }
 
