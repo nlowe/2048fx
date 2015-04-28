@@ -11,7 +11,7 @@ import javafx.scene.text.Text;
 public class CellView extends Pane{
 
     public static final int[] CELL_COLORS = {
-            0x000000, //UNDEFINED TODO: Sensible color
+            0x3c3a32, //UNDEFINED
             0xeee4da, //2
             0xede0c8, //4
             0xf2b179, //8
@@ -35,7 +35,7 @@ public class CellView extends Pane{
         Tooltip.install(this, new Tooltip(model.toString()));
 
         getStyleClass().add("cell-view");
-        if(model.getCellValue() >= 256) getStyleClass().add("glow");
+        if(model.getCellValue() >= 256 && model.getCellValue() <= 2048) getStyleClass().add("glow");
 
         String labelText = String.valueOf(model.getCellValue());
 
