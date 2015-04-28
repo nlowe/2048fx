@@ -3,6 +3,7 @@ package eecs1510.Game;
 import eecs1510.Game.Gui.MainWindow;
 import javafx.application.Platform;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -13,6 +14,8 @@ import java.util.function.Consumer;
  */
 public class GameController {
 
+    public static final String NO_PREVIOUS_GAME = "!NO_PREVIOUS_GAME!";
+    public static final File HIGH_SCORE_FILE = new File(System.getenv("user.home"), "HighScore.dat");
 
     private Cell[][] board;
     private Random randomizer;
@@ -25,8 +28,20 @@ public class GameController {
 
     private int undoCounter = 0;
 
+    private int lastHighScore = 0;
+    private String lastGamePath = NO_PREVIOUS_GAME;
+
     public GameController(MainWindow w){
-        statsManager = new StatsManager(w);
+
+        try(DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(HIGH_SCORE_FILE)))){
+            System.out.println("Reading stats from "  + HIGH_SCORE_FILE.getAbsolutePath());
+            lastHighScore = in.readInt();
+            lastGamePath = in.readUTF();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+
+        statsManager = new StatsManager(w, lastHighScore);
         onMoveComplete((move) -> {
             Platform.runLater(() -> statsManager.applyMove(move));
         });
@@ -36,7 +51,7 @@ public class GameController {
 
     public void startNewGame(){
         undoCounter = 0;
-        statsManager.reset(true);
+        statsManager.reset(lastHighScore);
         //Start a game with the specified rules
         board = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
 
@@ -256,6 +271,22 @@ public class GameController {
         undoCounter--;
 
         return true;
+    }
+
+    public void loadGame(){
+
+    }
+
+    public void saveHighScore(){
+        System.out.println("Trying to save high score to " + HIGH_SCORE_FILE.getAbsolutePath());
+        try(DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(HIGH_SCORE_FILE)))){
+            out.writeInt(getStatsManager().getHighScore());
+            out.writeUTF("!NO_PREVIOUS_GAME!");
+
+            out.flush();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void onGameWon(SimpleListener listener){

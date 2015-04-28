@@ -97,12 +97,12 @@ public class StatsManager {
         return highScoreProperty.getReadOnlyProperty();
     }
 
-    public void reset(boolean resetHighScore) {
+    public void reset(int resetHighScore) {
         score.clear();
         totalMerged.clear();
         turnCount.clear();
-        if(resetHighScore){
-            highScoreProperty.set(0);
+        if(resetHighScore >= 0){
+            highScoreProperty.set(resetHighScore);
             notifiedHighScore = false;
         }
 

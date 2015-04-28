@@ -42,6 +42,10 @@ public class MainWindow extends Application {
 
         gameScene.getStylesheets().add("eecs1510/Game/Gui/res/theme.css");
 
+        primaryStage.setOnCloseRequest(request -> {
+            controller.saveHighScore();
+        });
+
         primaryStage.setResizable(false);
         primaryStage.setScene(gameScene);
         primaryStage.setTitle("2048fx");

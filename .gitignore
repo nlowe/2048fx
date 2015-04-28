@@ -1,3 +1,6 @@
+# Project Save Games:
+*.dat
+
 # Gradle Stuff
 .gradle/
 build/
