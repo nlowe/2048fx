@@ -96,7 +96,7 @@ public class BoardView extends Pane{
                 cellViews.add(view);
                 getChildren().add(view);
 
-                if(c.isOriginCell() && c.getAge() == 0){
+                if((controller.getGameController().getStatsManager().isNewGame() && moveResult == null) || (c.isOriginCell() && c.getAge() == 0)){
                     //Newly Created Cell that was spawned randomly
                     ScaleTransition scale = new ScaleTransition();
                     scale.setDuration(Duration.millis(150));
@@ -109,7 +109,7 @@ public class BoardView extends Pane{
                     scale.setToY(1.0);
 
                     scale.play();
-                }else if(!c.isOriginCell() && c.getAge() == 0){
+                }else if(!c.isOriginCell() && c.getAge() == 1){
                     //Newly Merged Cell
 
                     CellView fatherView = new CellView(c.getFather());

@@ -33,10 +33,6 @@ public class Cell {
         this.father = father;
         this.mother = mother;
 
-        if(father != null && mother != null){
-            age = -1;
-        }
-
         lastBoardX = new SimpleIntegerProperty(x);
         boardX = new ReadOnlyIntegerWrapper(){
             @Override
@@ -58,22 +54,26 @@ public class Cell {
 
     public void move(int x, int y){
         if(positionHistory.count() > 0){
-            lastBoardX.set(boardX.get());
-            lastBoardY.set(boardY.get());
+            setMoveFrom(boardX.get(), boardY.get());
         }
         positionHistory.push(new Vec2i(x, y));
     }
 
     public boolean rollBack(){
-        if(age > 0){
+        if(--age >= 0){
+            if(age == 0 && !isOriginCell()) return true; // Newly Merged
             Vec2i current = positionHistory.pop();
-            lastBoardX.set(current.x);
-            lastBoardY.set(current.y);
-            return --age < 0;
+            setMoveFrom(current.x, current.y);
+            return false;
         }else{
             //Newly created cell
             return true;
         }
+    }
+
+    public void setMoveFrom(int x, int y){
+        lastBoardX.set(x);
+        lastBoardY.set(y);
     }
 
     public Cell getFather() {
@@ -110,7 +110,7 @@ public class Cell {
 
     @Override
     public String toString(){
-        return "{x: " + getBoardX() + ", y: " + getBoardY() + ", value: " + getCellValue() + ", age: " + age + ", positionStackSize: " + positionHistory.count() + "}";
+        return "{spawned: " + isOriginCell() + ", x: " + getBoardX() + ", y: " + getBoardY() + ", vx: " + (getBoardX() - getLastBoardX()) + ", vy:" + (getBoardY() - getLastBoardY()) + ", value: " + getCellValue() + ", age: " + age + ", positionStackSize: " + positionHistory.count() + "}";
     }
 
     public int getAge(){

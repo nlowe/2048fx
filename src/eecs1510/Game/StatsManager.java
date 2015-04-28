@@ -2,6 +2,8 @@ package eecs1510.Game;
 
 import eecs1510.Game.Gui.MainWindow;
 import eecs1510.Game.Gui.NotificationType;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 
@@ -20,6 +22,8 @@ public class StatsManager {
     private final ReadOnlyIntegerWrapper totalMergedProperty = new ReadOnlyIntegerWrapper(0);
 
     private final ReadOnlyIntegerWrapper highScoreProperty = new ReadOnlyIntegerWrapper();
+
+    private final ReadOnlyBooleanWrapper newGame = new ReadOnlyBooleanWrapper(true);
 
     private boolean notifiedHighScore = false;
 
@@ -49,6 +53,9 @@ public class StatsManager {
             totalMerged.push(getTotalMerged() + move.mergeCount);
 
             updateProperties();
+            if(isNewGame()){
+                newGame.set(false);
+            }
         }
     }
 
@@ -100,6 +107,7 @@ public class StatsManager {
         }
 
         updateProperties();
+        newGame.set(true);
     }
 
     public void rollBack(){
@@ -108,5 +116,13 @@ public class StatsManager {
         turnCount.pop();
 
         updateProperties();
+    }
+
+    public boolean isNewGame() {
+        return newGame.get();
+    }
+
+    public ReadOnlyBooleanProperty newGameProperty() {
+        return newGame.getReadOnlyProperty();
     }
 }

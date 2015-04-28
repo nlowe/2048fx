@@ -44,6 +44,8 @@ public class GameController {
 
         placeRandom();
         placeRandom();
+
+        Arrays.stream(board).flatMap(Arrays::stream).filter((c) -> c != null).forEach(Cell::survive);
     }
 
     public Cell cellAt(int row, int col){
@@ -226,19 +228,24 @@ public class GameController {
         Arrays.stream(board).flatMap(Arrays::stream).filter((cell) -> cell != null).forEach((cell) -> {
             boolean decompose = cell.rollBack();
             if (!decompose) {
+                System.out.println(cell + " is at least two generations old, just moving");
                 state[cell.getBoardY()][cell.getBoardX()] = cell;
             } else {
                 if (!cell.isOriginCell()) {
 
                     // Return Parents to game board
                     Cell father = cell.getFather();
+                    father.setMoveFrom(cell.getBoardX(), cell.getBoardY());
+
                     Cell mother = cell.getMother();
+                    mother.setMoveFrom(cell.getBoardX(), cell.getBoardY());
 
                     System.out.println("Decomposing " + cell + " into " + father + " and " + mother);
 
-                    //TODO: Animate?
                     state[father.getBoardY()][father.getBoardX()] = father;
                     state[mother.getBoardY()][mother.getBoardX()] = mother;
+                }else{
+                    System.out.println(cell + " was just added, removing");
                 }
             }
         });
