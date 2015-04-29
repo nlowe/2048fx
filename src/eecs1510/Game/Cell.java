@@ -5,6 +5,10 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * Created by nathan on 4/11/15
  */
@@ -74,6 +78,60 @@ public class Cell {
     public void setMoveFrom(int x, int y){
         lastBoardX.set(x);
         lastBoardY.set(y);
+    }
+
+    public static Cell readCell(DataInputStream in) throws IOException {
+        int age = in.readInt();
+        int value = in.readInt();
+
+        RingBuffer<Vec2i> positionHistory = new RingBuffer<>(11);
+
+        int depth = in.readInt();
+        for(int i=0; i<depth; i++){
+            int x = in.readInt();
+            int y = in.readInt();
+
+            positionHistory.push(new Vec2i(x, y));
+        }
+
+        boolean origin = in.readBoolean();
+
+        Cell father = null;
+        Cell mother = null;
+
+        if(!origin){
+            father = readCell(in);
+            mother = readCell(in);
+        }
+
+        Cell c = new Cell(father, mother, value, positionHistory.peek().x, positionHistory.peek().y);
+        c.age = age;
+        c.positionHistory = positionHistory;
+
+        System.out.println("Read " + c);
+        return c;
+    }
+
+    public void storeCell(DataOutputStream out) throws IOException {
+        out.writeInt(getAge());
+        out.writeInt(getCellValue());
+
+        int depth = positionHistory.count();
+
+        out.writeInt(depth);
+        for(int i=depth-1; i >= 0; i--){
+            Vec2i pos = positionHistory.getElement(i);
+            out.writeInt(pos.x);
+            out.writeInt(pos.y);
+        }
+
+        out.writeBoolean(isOriginCell());
+        if(!isOriginCell()){
+            father.storeCell(out);
+            mother.storeCell(out);
+        }
+
+        System.out.println("Wrote " + this);
     }
 
     public Cell getFather() {

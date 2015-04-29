@@ -1,12 +1,11 @@
 package eecs1510.Game;
 
 import java.util.LinkedList;
-import java.util.RandomAccess;
 
 /**
  * Created by nathan on 4/25/15
  */
-public class RingBuffer<T> implements RandomAccess{
+public class RingBuffer<T> {
 
     private final int size;
     private final LinkedList<T> buffer;
