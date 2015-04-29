@@ -1,12 +1,21 @@
 # 2048fx On-Disk File Format
+`2048fx` uses two file types to store information about games: A high-score tracking file
+and a more general save game file.
 
 ## Statistics
+The high score file keeps track of the best score ever reached and the location of the most
+recently saved game
 
 * **signed `int`**: High Score
 * **utf8 `String`**: Path to most recently saved game
 
 ## Saved Games
-Starts off with some basic statistics and then stores cells recursively
+Saved games contain the remainder of the stats and all cells created during the life of a game.
+
+First, all cells on the board currently are saved, and then the history is traversed, saving
+the state of cells and their composing cells along the way in a recursive fashion.
+
+The file format is as follows:
 
 * **signed `int`**: Total Number of Moves thus far
 * **signed `int`**: Score Stack Size
