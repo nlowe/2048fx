@@ -8,6 +8,8 @@ import javafx.stage.Stage;
 
 /**
  * Created by nathan on 4/7/15
+ *
+ * The main class and application for 2048fx
  */
 public class MainWindow extends Application {
 
@@ -17,6 +19,7 @@ public class MainWindow extends Application {
     private KeyManager keyManager;
     /** The Board View: Displays the board presented by the game controller */
     private BoardView board;
+    /** The primary stage associated with this application. Used to set the modality on the help dialog */
     private Stage primaryStage;
 
     public static void main(String[] args){
@@ -26,9 +29,12 @@ public class MainWindow extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
+
+        // Setup the controllers
         controller = new GameController(this);
         keyManager = new KeyManager(this);
 
+        // Layout Components
         BorderPane root = new BorderPane();
         MenuBar menu = new MenuBar(this);
         root.setTop(menu);
@@ -40,12 +46,15 @@ public class MainWindow extends Application {
         // TODO: Figure out why this fudge factor of 6 is needed for the height
         Scene gameScene = new Scene(root, 618, menu.getPrefHeight()+618+6);
 
+        // Setup the theme
         gameScene.getStylesheets().add("eecs1510/Game/Gui/res/theme.css");
 
+        // Always save the high score when closing down
         primaryStage.setOnCloseRequest(request -> {
             controller.saveHighScore();
         });
 
+        // Add the scene to the stage, make the stage not resizeable, set the title, and show
         primaryStage.setResizable(false);
         primaryStage.setScene(gameScene);
         primaryStage.setTitle("2048fx");

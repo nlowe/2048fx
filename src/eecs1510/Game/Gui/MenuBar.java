@@ -14,9 +14,20 @@ import javafx.scene.layout.Priority;
 
 /**
  * Created by nathan on 4/7/15
+ *
+ * A top menu bar, inspired by Gtk+'s HeaderBar
  */
 public class MenuBar extends ToolBar {
 
+    /**
+     *
+     * A convenience method to create a button with the specified image, tooltip, and event handler
+     *
+     * @param resourcePath  the path to the icon to use for the button
+     * @param tooltip       the tooltip text (if applicable)
+     * @param eventHandler  the event handler to assign to the button (if applicable)
+     * @return a new <code>Button</code> with the specified properties
+     */
     private Button createButton(String resourcePath, String tooltip, EventHandler<ActionEvent> eventHandler){
         Button b = new Button("", new ImageView(new Image(MainWindow.class.getResourceAsStream(resourcePath))));
 
@@ -39,6 +50,7 @@ public class MenuBar extends ToolBar {
         this.setPrefHeight(40);
 
         Button loadGame = createButton("res/icons/ic_folder_open_black_24dp.png", "Open Menu", (e) -> {
+            // Try to load a game
             boolean result = controller.getGameController().startGameFromFile("2048.dat");
             if(!result){
                 controller.getBoardRenderer().displayNotification("Error Loading Game", 1, NotificationType.ERROR);
@@ -48,6 +60,7 @@ public class MenuBar extends ToolBar {
         });
 
         Button saveGame = createButton("res/icons/ic_save_black_24dp.png", "Save Game", (e) -> {
+            // Try to save a game
             boolean result = controller.getGameController().saveGame("2048.dat");
             if(result){
                 controller.getBoardRenderer().displayNotification("Game Saved", 1, NotificationType.INFO);
@@ -58,10 +71,12 @@ public class MenuBar extends ToolBar {
 
         Button newGame  = createButton("res/icons/ic_add_box_black_24dp.png", "New Game", (e) -> {
             //FIXME: Prompt to save
+            // Start a new game and update the Board View
             controller.getGameController().startNewGame();
             controller.getBoardRenderer().updateView(null);
         });
 
+        // A spacer to center the labels
         Pane leftSpacer = new Pane();
         HBox.setHgrow(leftSpacer, Priority.ALWAYS);
 
@@ -72,15 +87,17 @@ public class MenuBar extends ToolBar {
         Label bestLabel = new Label("Best:");
         Label best = new Label("0");
 
+        // Bind the labels to the stats manager's properties
         turns.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().turnCountProperty()));
         score.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().scorePropertyProperty()));
         best.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().highScorePropertyProperty()));
 
+        // Another spacer to center the labels
         Pane rightSpacer = new Pane();
         HBox.setHgrow(rightSpacer, Priority.ALWAYS);
 
         Button undo = createButton("res/icons/ic_undo_black_24dp.png", "Undo Last Move", (e) -> {
-            //controller.getBoardRenderer().displayNotification("Undo Not Implemented!", 2, NotificationType.ERROR);
+            // Attempt to undo the most recent move
             boolean undone = controller.getGameController().undoMove();
             if(!undone){
                 controller.getBoardRenderer().displayNotification("Can't undo move!", 2, NotificationType.ERROR);
@@ -88,6 +105,7 @@ public class MenuBar extends ToolBar {
         });
 
         Button help = createButton("res/icons/ic_help_black_24dp.png", "Help", (e) -> {
+            // Display the help dialog
             controller.showHelpDialog();
         });
 
@@ -103,6 +121,7 @@ public class MenuBar extends ToolBar {
             }
         };
 
+        // Add the event handler to the menu itself and to each child
         addEventFilter(KeyEvent.KEY_TYPED, keyHandler);
         getItems().stream().forEach((node) -> {
             node.addEventFilter(KeyEvent.KEY_TYPED, keyHandler);

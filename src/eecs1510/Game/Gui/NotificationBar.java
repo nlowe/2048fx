@@ -9,10 +9,14 @@ import javafx.scene.layout.Priority;
 
 /**
  * Created by nathan on 4/22/15
+ *
+ * A simple pop-over pane inspired by Gtk+'s InfoBar combined with the Revealer animation
  */
 public class NotificationBar extends GridPane{
 
+    /** The duration, in seconds, that this notification should be visible **/
     private final int duration;
+    /** The type or priority of the notification*/
     private final NotificationType type;
 
     public NotificationBar(String text){
@@ -34,6 +38,7 @@ public class NotificationBar extends GridPane{
 
         setPadding(new Insets(10, 10, 10, 10));
 
+        // Grow and center all the things
         ColumnConstraints c = new ColumnConstraints();
         c.setHgrow(Priority.ALWAYS);
         c.setFillWidth(true);

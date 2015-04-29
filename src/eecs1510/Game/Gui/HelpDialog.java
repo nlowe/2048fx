@@ -22,6 +22,10 @@ import java.io.StringWriter;
 
 /**
  * Created by nathan on 4/21/15
+ *
+ * A separate stage containing help and license information for 2048fx
+ *
+ * TODO: This needs theme'd
  */
 public class HelpDialog extends Stage {
 
@@ -101,10 +105,17 @@ public class HelpDialog extends Stage {
         setResizable(false);
     }
 
+    /**
+     * Gets the content of the specified license file
+     *
+     * @param resourcePath the path to the license file
+     * @return a <code>String</code> object containing the license's contents
+     */
     private String getLicenseContent(String resourcePath){
         StringBuilder sb = new StringBuilder();
 
         try(BufferedReader br = new BufferedReader(new InputStreamReader(MainWindow.class.getResourceAsStream(resourcePath)))){
+            // Read the license in Line by Line
             String line;
             while((line = br.readLine()) != null){
                 sb.append(line).append("\n");

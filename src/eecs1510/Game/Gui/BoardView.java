@@ -17,14 +17,21 @@ import java.util.Stack;
 
 /**
  * Created by nathan on 4/11/15
+ *
+ * A view representing the game board, updated each turn
  */
 public class BoardView extends Pane{
 
+    /** The primary controller for this application */
     private final MainWindow controller;
+    /** All Cell Views currently in this Node's scene graph */
     private final ArrayList<CellView> cellViews = new ArrayList<>();
 
+    /** Notifications to display */
     private final Stack<NotificationBar> notifications = new Stack<>();
+    /** The current notification animation, null if there is no notification being displayed */
     private SequentialTransition notificationTransition = null;
+    /** The current notification being displayed */
     private volatile NotificationBar notification = null;
 
     public BoardView(MainWindow controller){
@@ -39,6 +46,7 @@ public class BoardView extends Pane{
 
         this.controller = controller;
 
+        // Add the 'empty' background cells
         for(int row = 0; row < Rules.BOARD_SIZE; row++){
             for(int col=0; col < Rules.BOARD_SIZE; col++){
                 Pane emptyCell = new Pane();
@@ -60,9 +68,11 @@ public class BoardView extends Pane{
             }
         });
 
+        // Display the initial state and request focus for events
         updateView(null);
         requestFocus();
 
+        // Update the view after every move
         controller.getGameController().onMoveComplete((moveResult) -> {
             if (moveResult != null && moveResult.isInvalid()) {
                 displayNotification("Invalid Move!", 3, NotificationType.WARNING);
@@ -72,14 +82,25 @@ public class BoardView extends Pane{
         });
     }
 
+    /**
+     * Updates the view after a move is taken (skipped on an invalid move) by doing the following:
+     *
+     * 1) Removes all cell views from the scene graph
+     * 2) Adds a cell view for each cell in the game board
+     * 3) Creates and plays an animation for each cell depending on it's previous state
+     *
+     * @param moveResult the result of the move, or null to force a re-draw
+     */
     protected void updateView(MoveResult moveResult) {
         if(moveResult != null && moveResult.isInvalid()) return; //No need to update for invalid moves
 
         GameController game = controller.getGameController();
 
+        // Remove all nodes from the scene graph
         getChildren().removeAll(cellViews);
         cellViews.clear();
 
+        // Add CellViews
         for(int row = 0; row < Rules.BOARD_SIZE; row++){
             for(int col=0; col < Rules.BOARD_SIZE; col++){
                 Cell c = game.cellAt(row, col);
@@ -125,7 +146,9 @@ public class BoardView extends Pane{
                     cellViews.add(fatherView);
                     cellViews.add(motherView);
                     getChildren().addAll(fatherView, motherView);
-                    
+
+                    // Set this cell view to a scale of 0x0 and set it's location to it's destination
+                    // We'll animate the scale after the parents have 'merged'
                     view.setScaleX(0.0);
                     view.setScaleY(0.0);
                     view.setLayoutX(next.getX());
@@ -141,6 +164,7 @@ public class BoardView extends Pane{
                             new KeyFrame(Duration.millis(150), new KeyValue(motherView.layoutYProperty(), next.getY(), Interpolator.LINEAR))
                     );
 
+                    // 'Bloom' animation after a merge
                     move.setOnFinished((e) -> {
                         ScaleTransition up = new ScaleTransition(Duration.millis(75), view);
                         up.setFromX(0);
@@ -189,23 +213,44 @@ public class BoardView extends Pane{
         layoutChildren();
     }
 
+    /**
+     * Converts board coordinates to scene coordinates, where (0,0) is the upper-left corner of this Node
+     *
+     * @param x The x component or column
+     * @param y the y component or row
+     * @return
+     */
     public Point2D boardToScene(int x, int y){
         return new Point2D((x * 132) + (x*18) + 18, (y * 132) + (y*18) + 18);
     }
 
+    /**
+     * Queue's up a notification to be displayed. If there is no other notifications in the queue,
+     * the notification will be displayed immediately
+     *
+     * @param text  the Text of the notification
+     * @param duration  the duration in seconds
+     * @param priority  the priority (INFO, WARNING, or ERROR)
+     */
     public void displayNotification(String text, int duration, NotificationType priority){
         notifications.push(new NotificationBar(text, duration, priority));
         updateDisplayedNotifications();
     }
 
+    /**
+     * Plays the next notification if ther isn't one already or the current one has finished
+     */
     private void updateDisplayedNotifications(){
         if(notificationTransition == null || notificationTransition.getStatus().equals(Animation.Status.STOPPED) && notifications.size() > 0){
+            // Add the NotificationBar to the scene and position it above the board
             notification = notifications.pop();
             getChildren().add(notification);
             notification.setLayoutX(0);
             notification.setLayoutY(-100);
 
             Point2D tl = this.localToScene(Point2D.ZERO);
+
+            // PathTransitions animate on the center of an object
 
             PathTransition in = new PathTransition();
             in.setPath(new Path(new MoveTo(618/2, -100), new LineTo(618/2, tl.getY()+100)));
@@ -217,10 +262,12 @@ public class BoardView extends Pane{
             out.setNode(notification);
             out.setCycleCount(1);
 
+            // Create the composite transition (animate in, wait, animate out)
             notificationTransition = new SequentialTransition(
                     in, new PauseTransition(Duration.seconds(notification.getDuration())), out
             );
 
+            // Do it all over again when finished
             notificationTransition.setOnFinished((e) -> {
                 getChildren().remove(notification);
                 updateDisplayedNotifications();

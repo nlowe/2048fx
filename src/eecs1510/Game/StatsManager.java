@@ -13,27 +13,39 @@ import java.io.IOException;
 
 /**
  * Created by nathan on 4/22/15
+ *
+ * Controls and keeps track of stats for the game
  */
 public class StatsManager {
 
+    /** A history of the score */
     private final RingBuffer<Integer> score = new RingBuffer<>(11);
+    /** A property pointing to the current score */
     private final ReadOnlyIntegerWrapper scoreProperty = new ReadOnlyIntegerWrapper(0);
 
+    /** The number of elapsed turns */
     private final ReadOnlyIntegerWrapper turnCount = new ReadOnlyIntegerWrapper(0);
 
+    /** A history of the number of merged cells */
     private final RingBuffer<Integer> totalMerged = new RingBuffer<>(11);
+    /** A property pointing to the current number of merged cells */
     private final ReadOnlyIntegerWrapper totalMergedProperty = new ReadOnlyIntegerWrapper(0);
 
+    /** The highest score ever reached */
     private final ReadOnlyIntegerWrapper highScoreProperty = new ReadOnlyIntegerWrapper();
 
+    /** Whether or not the game this controller is tracking is newly started */
     private final ReadOnlyBooleanWrapper newGame = new ReadOnlyBooleanWrapper(true);
 
+    /** Whether or not the user has been notified of a new high score */
     private boolean notifiedHighScore = false;
 
     public StatsManager(MainWindow controller, int highScore){
 
         highScoreProperty.set(highScore);
 
+        // if the score is higher than the high score, update the high score
+        // and optionally notify the user
         scoreProperty.addListener(((observable, oldValue, newValue) -> {
             if (newValue.intValue() > getHighScore()) {
                 highScoreProperty.set(newValue.intValue());
@@ -45,6 +57,10 @@ public class StatsManager {
         }));
     }
 
+    /**
+     * Updates stats for the specified move result
+     * @param move the move result to apply stats from
+     */
     public void applyMove(MoveResult move){
         if(move != null && !move.isInvalid()){
             score.push(getScore() + move.mergeValue);
@@ -58,6 +74,9 @@ public class StatsManager {
         }
     }
 
+    /**
+     * Updates the properties tracking the stats buffers
+     */
     private void updateProperties(){
         scoreProperty.set(score.count() > 0 ? score.peek() : 0);
         totalMergedProperty.set(totalMerged.count() > 0 ? totalMerged.peek() : 0);
@@ -95,6 +114,11 @@ public class StatsManager {
         return highScoreProperty.getReadOnlyProperty();
     }
 
+    /**
+     * Resets the stats back to their initial state and optionally resets the high score
+     *
+     * @param resetHighScore whether to also reset the high score
+     */
     public void reset(int resetHighScore) {
         score.clear();
         totalMerged.clear();
@@ -108,6 +132,9 @@ public class StatsManager {
         newGame.set(true);
     }
 
+    /**
+     * Rolls back the stats to the previous state
+     */
     public void rollBack(){
         score.pop();
         totalMerged.pop();
@@ -116,6 +143,13 @@ public class StatsManager {
         updateProperties();
     }
 
+    /**
+     * Resets stats and then loads them from the specified stream
+     *
+     * @param in        the stream to read from
+     * @param highScore the high score to set
+     * @throws IOException
+     */
     public void loadFromFile(DataInput in, int highScore) throws IOException {
         reset(highScore);
 
@@ -137,6 +171,14 @@ public class StatsManager {
         System.out.println("Loaded stats " + this.toString());
     }
 
+    /**
+     * Saves stats to the specified stream.
+     *
+     * **Note**: High Scores are saved in a separate stream / file
+     *
+     * @param out
+     * @throws IOException
+     */
     public void save(DataOutputStream out) throws IOException {
         out.writeInt(getTurnCount());
 

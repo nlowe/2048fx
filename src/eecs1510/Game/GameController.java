@@ -11,28 +11,41 @@ import java.util.function.Consumer;
 
 /**
  * Created by nathan on 4/7/15
+ *
+ * The main controller for a game. Controls game statistics and the board
  */
 public class GameController {
 
+    /** The identifier used to indicate that no previous game was saved */
     public static final String NO_PREVIOUS_GAME = "!NO_PREVIOUS_GAME!";
+    /** The default location for the high score file */
     public static final File HIGH_SCORE_FILE = new File(System.getenv("user.home"), "HighScore.dat");
 
+    /** The internal representation of the game board*/
     private Cell[][] board;
+    /** The random number generator used in placing new cells */
     private Random randomizer;
+    /** The stats controller, reset when a new game is started or loaded */
     private final StatsManager statsManager;
 
     // --- Listener Stores----
+    /** All listeners listening to the 'GameWon' signal or event */
     private final ArrayList<SimpleListener> gameWonListeners = new ArrayList<>();
+    /** All listeners listening to the 'onMoveComplete' signal or event */
     private final ArrayList<Consumer<MoveResult>> moveCompleteListeners = new ArrayList<>();
     // -----------------------
 
+    /** The number of undo's left */
     private int undoCounter = 0;
 
+    /** The high score cached from reading the high score file*/
     private int lastHighScore = 0;
+    /** The path to the most recent game played (and saved) */
     private String lastGamePath = NO_PREVIOUS_GAME;
 
     public GameController(MainWindow w){
 
+        // Try to read the high score file
         try(DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(HIGH_SCORE_FILE)))){
             System.out.println("Reading stats from "  + HIGH_SCORE_FILE.getAbsolutePath());
             lastHighScore = in.readInt();
@@ -43,6 +56,7 @@ public class GameController {
 
         statsManager = new StatsManager(w, lastHighScore);
         onMoveComplete((move) -> {
+            // Update stats on every move
             Platform.runLater(() -> statsManager.applyMove(move));
         });
 
@@ -52,21 +66,31 @@ public class GameController {
     public void startNewGame(){
         undoCounter = 0;
         statsManager.reset(lastHighScore);
-        //Start a game with the specified rules
         board = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
 
         randomizer = new Random();
 
+        // Place two random tiles as per game rules
         placeRandom();
         placeRandom();
 
+        // The first two tiles have an age of 1 because of an edge case with undo animations
         Arrays.stream(board).flatMap(Arrays::stream).filter((c) -> c != null).forEach(Cell::survive);
     }
 
+    /**
+     * @return  the cell at the specified row and column
+     */
     public Cell cellAt(int row, int col){
         return board[row][col];
     }
 
+    /**
+     * Extract a vertical slice from the board at a given column
+     *
+     * @param column The column to slice
+     * @return a vertical slice of the board at the specified column
+     */
     private Cell[] slice(int column){
         Cell[] result = new Cell[Rules.BOARD_SIZE];
 
@@ -77,14 +101,26 @@ public class GameController {
         return result;
     }
 
+    /**
+     * @param slice
+     * @return a filtered array of the source <code>arr</code> with all null elements removed
+     */
     private Cell[] stripNull(Cell[] slice){
         return Arrays.stream(slice).filter((c) -> c != null).toArray(Cell[]::new);
     }
 
-    //TODO: This needs refactored / optimized
+    /**
+     * Executes a move in the specified direction
+     *
+     * Rows or columns are merged in the opposite direction that the move was taken in, and the
+     * results are copied into the game board, aligned at the direction edge
+     *
+     * @param direction
+     */
     public void takeMove(Direction direction){
-        //If there is an active game, execute a move in the direction specified
+        //TODO: This needs refactored / optimized
 
+        // If we're moving towards 0 for a slice, we need to merge left-to-right
         boolean LTR = direction == Direction.NORTH || direction == Direction.WEST;
         int size = Rules.BOARD_SIZE;
 
@@ -145,14 +181,20 @@ public class GameController {
         }
 
         if(totalMerged == 0 && Arrays.deepEquals(board, newState)){
+            // If we haven't merged anything and the new state is the same as the old one,
+            // then by definition the move is invalid
             doMoveComplete(MoveResult.invalid());
         }else{
+            // Otherwise, copy in the new state
             setState(newState);
 
+            // Increment the age for each cell
             Arrays.stream(board).flatMap(Arrays::stream).filter((c) -> c != null).forEach(Cell::survive);
 
+            // Increment the maximum amount of allowed undo's (up to 10)
             if(undoCounter < 10) undoCounter++;
 
+            // Notify listeners and check if we've lost
             boolean lost = placeRandom();
             doMoveComplete(new MoveResult(totalMerged, totalMergedValue));
 
@@ -162,8 +204,17 @@ public class GameController {
         }
     }
 
-    //TODO: This needs refactored / optimized
+    /**
+     * Merges like items in an array along the specified direction
+     *
+     * @param source The row or column-slice to merge
+     * @param LTR    Whether to merge from left to right or right to left
+     * @return a <code>MoveResult</code> object containing the total number
+     *         of merged cells as well as the score gained by those merged
+     *         cells for the specified slice of the game board
+     */
     public MoveResult merge(Cell[] source, boolean LTR){
+        //TODO: This needs refactored / optimized
         int totalMerged = 0;
         int totalMergedValue = 0;
 
@@ -190,12 +241,16 @@ public class GameController {
         return new MoveResult(totalMerged, totalMergedValue);
     }
 
+    /**
+     * Copies in the new state for the game board, 'moving' cells to their locations if they exist
+     * @param state the state to apply
+     */
     private void setState(Cell[][] state){
         for(int row = 0; row < Rules.BOARD_SIZE; row++){
             for(int col = 0; col < Rules.BOARD_SIZE; col++){
                 Cell c = state[row][col];
 
-                board[row][col] = state[row][col];
+                board[row][col] = c;
 
                 if(c != null){
                     c.move(col, row);
@@ -204,6 +259,12 @@ public class GameController {
         }
     }
 
+    /**
+     * Places a random 2 or 4 on the game board at a free space.
+     * If there are no more free spaces, this method returns false.
+     *
+     * @return true if a value was able to be placed
+     */
     public boolean placeRandom(){
         ArrayList<int[]> freeCells = getFreeCells();
 
@@ -211,16 +272,20 @@ public class GameController {
             return false;
         }
 
-        int initialValue = randomizer.nextDouble() >= Rules.FOUR_RATIO ? 4 : 2;
+        int initialValue = randomizer.nextDouble() >= Rules.FOUR_THRESHOLD ? 4 : 2;
 
         int[] cell = freeCells.get(randomizer.nextInt(freeCells.size()));
         int row = cell[0];
         int col = cell[1];
 
+        // Randomly placed cells don't have parents
         board[row][col] = new Cell(null, null, initialValue, col, row);
         return true;
     }
 
+    /**
+     * @return an ArrayList of integer arrays pointing to the location of free cells.
+     */
     public ArrayList<int[]> getFreeCells(){
         ArrayList<int[]> results = new ArrayList<>();
 
@@ -235,6 +300,11 @@ public class GameController {
         return  results;
     }
 
+    /**
+     * Rolls back the previous move if there is at least one undo left
+     *
+     * @return true iff the rollback was executed
+     */
     public boolean undoMove(){
         if(undoCounter < 1) return false;
 
@@ -243,12 +313,12 @@ public class GameController {
         Arrays.stream(board).flatMap(Arrays::stream).filter((cell) -> cell != null).forEach((cell) -> {
             boolean decompose = cell.rollBack();
             if (!decompose) {
+                // The cell is at least two generations old, just move it
                 System.out.println(cell + " is at least two generations old, just moving");
                 state[cell.getBoardY()][cell.getBoardX()] = cell;
             } else {
                 if (!cell.isOriginCell()) {
-
-                    // Return Parents to game board
+                    // Return Parents to game board and don't add the current cell back
                     Cell father = cell.getFather();
                     father.setMoveFrom(cell.getBoardX(), cell.getBoardY());
 
@@ -260,19 +330,33 @@ public class GameController {
                     state[father.getBoardY()][father.getBoardX()] = father;
                     state[mother.getBoardY()][mother.getBoardX()] = mother;
                 }else{
+                    // The cell was just added. Remove it
                     System.out.println(cell + " was just added, removing");
                 }
             }
         });
 
+        // Roll back stats
         statsManager.rollBack();
-        board = state; //Skip call to setState(...) because cells have already 'moved'
+
+        // Skip call to setState(...) because cells have already 'moved'
+        board = state;
+
+        // Update listeners and decrement the undo counter
         doMoveComplete(null);
         undoCounter--;
 
         return true;
     }
 
+    /**
+     * Saves the game to the file at the specified path, creating it if it doesn't exist.
+     *
+     * See <code>FORMAT.md</code> for a description of the on-disk file format
+     *
+     * @param path the path to save to
+     * @return true iff the game was able to be saved to the specified path
+     */
     public boolean saveGame(String path){
         try(DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path)))){
             statsManager.save(out);
@@ -292,6 +376,14 @@ public class GameController {
         }
     }
 
+    /**
+     * Loads the game from the file at the specified path
+     *
+     * See <code>FORMAT.md</code> for a description of the on-disk file format
+     *
+     * @param path the path to load the game from
+     * @return true iff the game was able to be loaded
+     */
     public boolean startGameFromFile(String path){
         try(DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(path)))){
             statsManager.loadFromFile(in, lastHighScore);
@@ -319,6 +411,9 @@ public class GameController {
         }
     }
 
+    /**
+     * Saves the high score information between games
+     */
     public void saveHighScore(){
         System.out.println("Trying to save high score to " + HIGH_SCORE_FILE.getAbsolutePath());
         try(DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(HIGH_SCORE_FILE)))){
@@ -331,18 +426,33 @@ public class GameController {
         }
     }
 
+    /**
+     * Add a listener to the 'gameWon' signal or event
+     * @param listener
+     */
     public void onGameWon(SimpleListener listener){
         gameWonListeners.add(listener);
     }
 
+    /**
+     * Add a listener to the 'moveComplete' signal or event
+     * @param listener
+     */
     public void onMoveComplete(Consumer<MoveResult> listener){
         moveCompleteListeners.add(listener);
     }
 
+    /**
+     * Notifies all listeners that a move has been completed
+     * @param move the move result from the move. May be null.
+     */
     private void doMoveComplete(MoveResult move){
         moveCompleteListeners.stream().forEach((l) -> l.accept(move));
     }
 
+    /**
+     * Notify all listeners that the game is won
+     */
     private void doGameWon(){
         gameWonListeners.stream().forEach((SimpleListener::listen));
     }
