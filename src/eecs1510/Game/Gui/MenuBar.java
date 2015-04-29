@@ -39,11 +39,21 @@ public class MenuBar extends ToolBar {
         this.setPrefHeight(40);
 
         Button loadGame = createButton("res/icons/ic_folder_open_black_24dp.png", "Open Menu", (e) -> {
-            controller.getBoardRenderer().displayNotification("Open Game Not Implemented!", 2, NotificationType.ERROR);
+            boolean result = controller.getGameController().startGameFromFile("2048.dat");
+            if(!result){
+                controller.getBoardRenderer().displayNotification("Error Loading Game", 1, NotificationType.ERROR);
+            }else{
+                controller.getBoardRenderer().updateView(null);
+            }
         });
 
         Button saveGame = createButton("res/icons/ic_save_black_24dp.png", "Save Game", (e) -> {
-            controller.getBoardRenderer().displayNotification("Save Game Not Implemented!", 2, NotificationType.ERROR);
+            boolean result = controller.getGameController().saveGame("2048.dat");
+            if(result){
+                controller.getBoardRenderer().displayNotification("Game Saved", 1, NotificationType.INFO);
+            }else{
+                controller.getBoardRenderer().displayNotification("Error Saving Game", 1, NotificationType.ERROR);
+            }
         });
 
         Button newGame  = createButton("res/icons/ic_add_box_black_24dp.png", "New Game", (e) -> {
@@ -62,7 +72,7 @@ public class MenuBar extends ToolBar {
         Label bestLabel = new Label("Best:");
         Label best = new Label("0");
 
-        turns.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().turnCountPropertyProperty()));
+        turns.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().turnCountProperty()));
         score.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().scorePropertyProperty()));
         best.textProperty().bind(Bindings.convert(controller.getGameController().getStatsManager().highScorePropertyProperty()));
 

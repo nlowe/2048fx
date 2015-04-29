@@ -6,11 +6,15 @@
 * **utf8 `String`**: Path to most recently saved game
 
 ## Saved Games
-Starts off with some basic statistics and then stores cells recursively up to the undo limit
+Starts off with some basic statistics and then stores cells recursively
 
 * **signed `int`**: Total Number of Moves thus far
-* **signed `int`**: Total Score thus far
-* **signed `int`**: Total Number of Merged Cells thus far
+* **signed `int`**: Score Stack Size
+* `For Each`
+    * **signed `int`**: Total Score during the turn
+* **signed `int`**: Merged Cells Stack Size
+* `For Each`
+    * **signed `int`**: Total Number of Merged Cells this turn
 * **signed `int`**: Undo Counter
 * **signed `int`**: Number of Cells
 * `For Each Cell`:

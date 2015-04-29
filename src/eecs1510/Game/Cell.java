@@ -80,13 +80,11 @@ public class Cell {
         lastBoardY.set(y);
     }
 
-    public static Cell readCell(DataInputStream in, int limit) throws IOException {
-        int nextLimit = limit;
-
+    public static Cell readCell(DataInputStream in) throws IOException {
         int age = in.readInt();
         int value = in.readInt();
 
-        RingBuffer<Vec2i> positionHistory = new RingBuffer<>(10);
+        RingBuffer<Vec2i> positionHistory = new RingBuffer<>(11);
 
         int depth = in.readInt();
         for(int i=0; i<depth; i++){
@@ -94,7 +92,6 @@ public class Cell {
             int y = in.readInt();
 
             positionHistory.push(new Vec2i(x, y));
-            nextLimit--;
         }
 
         boolean origin = in.readBoolean();
@@ -103,38 +100,38 @@ public class Cell {
         Cell mother = null;
 
         if(!origin){
-            father = readCell(in, nextLimit);
-            mother = readCell(in, nextLimit);
+            father = readCell(in);
+            mother = readCell(in);
         }
 
-        Cell c = new Cell(father, mother, value);
+        Cell c = new Cell(father, mother, value, positionHistory.peek().x, positionHistory.peek().y);
         c.age = age;
         c.positionHistory = positionHistory;
 
+        System.out.println("Read " + c);
         return c;
     }
 
-    public void storeCell(DataOutputStream out, int limit) throws IOException {
-        int nextLimit = limit;
-
+    public void storeCell(DataOutputStream out) throws IOException {
         out.writeInt(getAge());
         out.writeInt(getCellValue());
 
-        int depth = positionHistory.count() > limit ? limit : positionHistory.count();
+        int depth = positionHistory.count();
+
         out.writeInt(depth);
-        for(int i=0; i<depth; i++){
+        for(int i=depth-1; i >= 0; i--){
             Vec2i pos = positionHistory.getElement(i);
             out.writeInt(pos.x);
             out.writeInt(pos.y);
-
-            nextLimit--;
         }
 
         out.writeBoolean(isOriginCell());
         if(!isOriginCell()){
-            father.storeCell(out, nextLimit);
-            mother.storeCell(out, nextLimit);
+            father.storeCell(out);
+            mother.storeCell(out);
         }
+
+        System.out.println("Wrote " + this);
     }
 
     public Cell getFather() {

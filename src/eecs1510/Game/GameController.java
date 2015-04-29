@@ -274,7 +274,16 @@ public class GameController {
     }
 
     public boolean saveGame(String path){
-        try(DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(path)))){
+        try(DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path)))){
+            statsManager.save(out);
+
+            out.writeInt(undoCounter);
+
+            Cell[] cells = Arrays.stream(board).flatMap(Arrays::stream).filter(c -> c != null).toArray(Cell[]::new);
+            out.writeInt(cells.length);
+            for (Cell cell : cells) {
+                cell.storeCell(out);
+            }
 
             return true;
         }catch(IOException ex){
@@ -283,8 +292,31 @@ public class GameController {
         }
     }
 
-    public void loadGame(String path){
+    public boolean startGameFromFile(String path){
+        try(DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(path)))){
+            statsManager.loadFromFile(in, lastHighScore);
 
+            int undoCounter = in.readInt();
+
+            int count = in.readInt();
+            Cell[] cells = new Cell[count];
+            for(int i=0; i<count; i++){
+                cells[i] = Cell.readCell(in);
+            }
+
+            Cell[][] b = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
+            for(Cell c : cells){
+                b[c.getBoardY()][c.getBoardX()] = c;
+            }
+
+            board = b;
+            this.undoCounter = undoCounter;
+
+            return true;
+        }catch(IOException ex){
+            ex.printStackTrace();
+            return false;
+        }
     }
 
     public void saveHighScore(){

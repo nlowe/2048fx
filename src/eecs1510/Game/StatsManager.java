@@ -7,6 +7,10 @@ import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 
+import java.io.DataInput;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * Created by nathan on 4/22/15
  */
@@ -15,8 +19,7 @@ public class StatsManager {
     private final RingBuffer<Integer> score = new RingBuffer<>(11);
     private final ReadOnlyIntegerWrapper scoreProperty = new ReadOnlyIntegerWrapper(0);
 
-    private final RingBuffer<Integer> turnCount = new RingBuffer<>(11);
-    private final ReadOnlyIntegerWrapper turnCountProperty = new ReadOnlyIntegerWrapper(0);
+    private final ReadOnlyIntegerWrapper turnCount = new ReadOnlyIntegerWrapper(0);
 
     private final RingBuffer<Integer> totalMerged = new RingBuffer<>(11);
     private final ReadOnlyIntegerWrapper totalMergedProperty = new ReadOnlyIntegerWrapper(0);
@@ -26,10 +29,6 @@ public class StatsManager {
     private final ReadOnlyBooleanWrapper newGame = new ReadOnlyBooleanWrapper(true);
 
     private boolean notifiedHighScore = false;
-
-    public StatsManager(MainWindow controller){
-        this(controller, 0);
-    }
 
     public StatsManager(MainWindow controller, int highScore){
 
@@ -49,7 +48,7 @@ public class StatsManager {
     public void applyMove(MoveResult move){
         if(move != null && !move.isInvalid()){
             score.push(getScore() + move.mergeValue);
-            turnCount.push(getTurnCount() + 1);
+            turnCount.set(turnCount.get() + 1);
             totalMerged.push(getTotalMerged() + move.mergeCount);
 
             updateProperties();
@@ -61,7 +60,6 @@ public class StatsManager {
 
     private void updateProperties(){
         scoreProperty.set(score.count() > 0 ? score.peek() : 0);
-        turnCountProperty.set(turnCount.count() > 0 ? turnCount.peek() : 0);
         totalMergedProperty.set(totalMerged.count() > 0 ? totalMerged.peek() : 0);
     }
 
@@ -74,11 +72,11 @@ public class StatsManager {
     }
 
     public int getTurnCount() {
-        return turnCountProperty.get();
+        return turnCount.get();
     }
 
-    public ReadOnlyIntegerProperty turnCountPropertyProperty() {
-        return turnCountProperty.getReadOnlyProperty();
+    public ReadOnlyIntegerProperty turnCountProperty() {
+        return turnCount.getReadOnlyProperty();
     }
 
     public int getTotalMerged() {
@@ -100,7 +98,7 @@ public class StatsManager {
     public void reset(int resetHighScore) {
         score.clear();
         totalMerged.clear();
-        turnCount.clear();
+        turnCount.set(0);
         if(resetHighScore >= 0){
             highScoreProperty.set(resetHighScore);
             notifiedHighScore = false;
@@ -113,9 +111,44 @@ public class StatsManager {
     public void rollBack(){
         score.pop();
         totalMerged.pop();
-        turnCount.pop();
+        turnCount.set(turnCount.get() - 1);
 
         updateProperties();
+    }
+
+    public void loadFromFile(DataInput in, int highScore) throws IOException {
+        reset(highScore);
+
+        turnCount.set(in.readInt());
+
+        int count = in.readInt();
+        for(int i=0; i<count; i++){
+            score.push(in.readInt());
+        }
+
+        count = in.readInt();
+        for(int i=0; i<count; i++){
+            totalMerged.push(in.readInt());
+        }
+
+        newGame.set(true);
+        updateProperties();
+
+        System.out.println("Loaded stats " + this.toString());
+    }
+
+    public void save(DataOutputStream out) throws IOException {
+        out.writeInt(getTurnCount());
+
+        out.writeInt(score.count());
+        for(int i=score.count()-1; i >= 0; i--){
+            out.writeInt(score.getElement(i));
+        }
+
+        out.writeInt(totalMerged.count());
+        for(int i=totalMerged.count()-1; i >= 0; i--){
+            out.writeInt(totalMerged.getElement(i));
+        }
     }
 
     public boolean isNewGame() {
@@ -124,5 +157,10 @@ public class StatsManager {
 
     public ReadOnlyBooleanProperty newGameProperty() {
         return newGame.getReadOnlyProperty();
+    }
+
+    @Override
+    public String toString(){
+        return "{turn: " + getTurnCount() + ", score: " + getScore() + ", best: " + getHighScore() + ", totalMerged: " + getTotalMerged() + "}";
     }
 }
