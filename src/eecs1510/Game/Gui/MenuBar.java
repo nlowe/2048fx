@@ -49,24 +49,12 @@ public class MenuBar extends ToolBar {
 
         this.setPrefHeight(40);
 
-        Button loadGame = createButton("res/icons/ic_folder_open_black_24dp.png", "Open Menu", (e) -> {
-            // Try to load a game
-            boolean result = controller.getGameController().startGameFromFile("2048.dat");
-            if(!result){
-                controller.getBoardRenderer().displayNotification("Error Loading Game", 1, NotificationType.ERROR);
-            }else{
-                controller.getBoardRenderer().updateView(null);
-            }
+        Button loadGame = createButton("res/icons/ic_folder_open_black_24dp.png", "Resume Game", (e) -> {
+            controller.tryStartSavedGame();
         });
 
         Button saveGame = createButton("res/icons/ic_save_black_24dp.png", "Save Game", (e) -> {
-            // Try to save a game
-            boolean result = controller.getGameController().saveGame("2048.dat");
-            if(result){
-                controller.getBoardRenderer().displayNotification("Game Saved", 1, NotificationType.INFO);
-            }else{
-                controller.getBoardRenderer().displayNotification("Error Saving Game", 1, NotificationType.ERROR);
-            }
+            controller.trySaveGame();
         });
 
         Button newGame  = createButton("res/icons/ic_add_box_black_24dp.png", "New Game", (e) -> {

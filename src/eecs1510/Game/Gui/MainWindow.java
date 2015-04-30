@@ -61,6 +61,31 @@ public class MainWindow extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Tries to load a saved game from the file '2048.dat' in the current directory
+     */
+    public void tryStartSavedGame(){
+        boolean result = controller.startGameFromFile("2048.dat");
+        if(!result){
+            board.displayNotification("Error Loading Game", 1, NotificationType.ERROR);
+        }else{
+            board.updateView(null);
+        }
+    }
+
+    /**
+     * Tries to save the current game to the file '2048.dat' in the current directory
+     */
+    public void trySaveGame(){
+        // Try to save a game
+        boolean result = controller.saveGame("2048.dat");
+        if(result){
+            board.displayNotification("Game Saved", 1, NotificationType.INFO);
+        }else{
+            board.displayNotification("Error Saving Game", 1, NotificationType.ERROR);
+        }
+    }
+
     public GameController getGameController() {
         return controller;
     }

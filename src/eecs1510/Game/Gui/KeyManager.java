@@ -32,8 +32,8 @@ public class KeyManager {
         }else if(e.isAltDown()){
             // Special Keys
             switch(e.getCode()){
-                case S: return true; //TODO: FIXME: Save Game
-                case L: return true; //TODO: FIXME: Load Game
+                case S: controller.trySaveGame(); return true;
+                case L: controller.tryStartSavedGame(); return true;
                 case H: controller.showHelpDialog(); return true;
                 case K: Platform.exit();
                 default: return false;
