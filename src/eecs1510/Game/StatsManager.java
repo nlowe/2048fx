@@ -62,7 +62,7 @@ public class StatsManager {
      * @param move the move result to apply stats from
      */
     public void applyMove(MoveResult move){
-        if(move != null && !move.isInvalid()){
+        if(move != null && !move.isInvalid() && !move.wasUndoFlagSet()){
             score.push(getScore() + move.mergeValue);
             turnCount.set(turnCount.get() + 1);
             totalMerged.push(getTotalMerged() + move.mergeCount);

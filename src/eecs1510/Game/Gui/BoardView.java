@@ -130,8 +130,8 @@ public class BoardView extends Pane{
                     scale.setToY(1.0);
 
                     scale.play();
-                }else if(!c.isOriginCell() && c.getAge() == 1){
-                    //Newly Merged Cell
+                }else if((moveResult != null && !moveResult.wasUndoFlagSet()) && !c.isOriginCell() && c.getAge() == 1){
+                    //Newly Merged Cell (Ignores undo)
 
                     CellView fatherView = new CellView(c.getFather());
                     Point2D fatherPoint = boardToScene(fatherView.model.getBoardX(), fatherView.model.getBoardY());

@@ -343,7 +343,7 @@ public class GameController {
         board = state;
 
         // Update listeners and decrement the undo counter
-        doMoveComplete(null);
+        doMoveComplete(MoveResult.undo());
         undoCounter--;
 
         return true;
