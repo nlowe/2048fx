@@ -29,6 +29,8 @@ public class GameController {
     private final StatsManager statsManager;
 
     // --- Listener Stores----
+    /** All listeners listening to the 'GameLost' signal or event */
+    private final ArrayList<SimpleListener> gameLostListeners = new ArrayList<>();
     /** All listeners listening to the 'GameWon' signal or event */
     private final ArrayList<SimpleListener> gameWonListeners = new ArrayList<>();
     /** All listeners listening to the 'onMoveComplete' signal or event */
@@ -37,6 +39,8 @@ public class GameController {
 
     /** The number of undo's left */
     private int undoCounter = 0;
+    /** True if the won condition has already been met */
+    private boolean notifiedWon = false;
 
     /** The high score cached from reading the high score file*/
     private int lastHighScore = 0;
@@ -55,10 +59,7 @@ public class GameController {
         }
 
         statsManager = new StatsManager(w, lastHighScore);
-        onMoveComplete((move) -> {
-            // Update stats on every move
-            Platform.runLater(() -> statsManager.applyMove(move));
-        });
+        onMoveComplete(statsManager::applyMove);
 
         startNewGame();
     }
@@ -66,7 +67,13 @@ public class GameController {
     public void startNewGame(){
         undoCounter = 0;
         statsManager.reset(lastHighScore);
-        board = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
+//        board = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
+        board = new Cell[][]{
+                {new Cell(null, null, 1024, 0, 0), new Cell(null, null, 1024, 1, 0), null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+        };
 
         randomizer = new Random();
 
@@ -194,12 +201,17 @@ public class GameController {
             // Increment the maximum amount of allowed undo's (up to 10)
             if(undoCounter < 10) undoCounter++;
 
-            // Notify listeners and check if we've lost
-            boolean lost = placeRandom();
+            // Determine if the game is lost
+            boolean lost = !placeRandom() || isLost();
+
+            // Notify listeners
             doMoveComplete(new MoveResult(totalMerged, totalMergedValue));
 
             if(lost){
-                //TODO: doGameLost
+                doGameLost();
+            }else if(!notifiedWon && isGameWon()){
+                notifiedWon = true;
+                doGameWon();
             }
         }
     }
@@ -350,6 +362,49 @@ public class GameController {
     }
 
     /**
+     * @return true iff the game board contains a cell with a value of at least 2048
+     */
+    public boolean isGameWon(){
+        return Arrays.stream(board).flatMap(Arrays::stream).filter(c -> c != null && c.getCellValue() >= 2048).count() > 0;
+    }
+
+    /**
+     * @return true if there are no more moves left to be made
+     */
+    public boolean isLost(){
+
+        // North / South
+        for (int col = 0; col < Rules.BOARD_SIZE; col++){
+            for (int row = 0; row < Rules.BOARD_SIZE - 1; row++){
+                if (canMergeCell(board[row][col], board[row + 1][col]))
+                    return false;
+            }
+        }
+
+        // East / West
+        for (int row = 0; row < Rules.BOARD_SIZE; row++){
+            for (int col = 0; col < Rules.BOARD_SIZE - 1; col++){
+                if(canMergeCell(board[row][col], board[row][col + 1]))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Determines whether or not two cells can be merged
+     * @param left The first cell to check
+     * @param right The second cell to check
+     * @return true iff only one of the cells is null (the other can be moved) or the cells contain the same value
+     */
+    private boolean canMergeCell(Cell left, Cell right){
+        return
+                (left == null ^ right == null) ||
+                (left != null && right != null &&  left.getCellValue() == right.getCellValue());
+    }
+
+    /**
      * Saves the game to the file at the specified path, creating it if it doesn't exist.
      *
      * See <code>FORMAT.md</code> for a description of the on-disk file format
@@ -426,6 +481,8 @@ public class GameController {
         }
     }
 
+    public void onGameLost(SimpleListener listener){ gameLostListeners.add(listener); }
+
     /**
      * Add a listener to the 'gameWon' signal or event
      * @param listener
@@ -454,7 +511,14 @@ public class GameController {
      * Notify all listeners that the game is won
      */
     private void doGameWon(){
-        gameWonListeners.stream().forEach((SimpleListener::listen));
+        gameWonListeners.stream().forEach(SimpleListener::listen);
+    }
+
+    /**
+     * Notify all listeners that the game is lost
+     */
+    private void doGameLost(){
+        gameLostListeners.stream().forEach(SimpleListener::listen);
     }
 
     public StatsManager getStatsManager(){

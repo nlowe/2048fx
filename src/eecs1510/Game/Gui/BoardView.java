@@ -1,10 +1,9 @@
 package eecs1510.Game.Gui;
 
-import eecs1510.Game.Cell;
-import eecs1510.Game.GameController;
-import eecs1510.Game.MoveResult;
-import eecs1510.Game.Rules;
+import eecs1510.Game.*;
+import eecs1510.Game.Gui.Notification.*;
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.LineTo;
@@ -33,6 +32,9 @@ public class BoardView extends Pane{
     private SequentialTransition notificationTransition = null;
     /** The current notification being displayed */
     private volatile NotificationBar notification = null;
+
+    /** The currently displayed overlay */
+    private BoardOverlay overlay = null;
 
     public BoardView(MainWindow controller){
         super();
@@ -80,6 +82,59 @@ public class BoardView extends Pane{
                 updateView(moveResult);
             }
         });
+
+        controller.getGameController().onGameLost(() -> {
+            overlay = new GameOverOverlay(controller);
+            overlay.setOpacity(0.0);
+            overlay.requestFocus();
+
+            getChildren().add(overlay);
+
+            // Fade the overlay up from 0 opacity to full opacity
+            FadeTransition fade = new FadeTransition(Duration.millis(250), overlay);
+            fade.setFromValue(0.0);
+            fade.setToValue(1.0);
+            fade.setCycleCount(1);
+
+            PauseTransition delay = new PauseTransition(Duration.seconds(5));
+            delay.setOnFinished((e) -> {
+                // Exit after 2 seconds as per assignment specification
+                Platform.exit();
+            });
+            delay.setCycleCount(1);
+
+            new SequentialTransition(overlay, fade, delay).play();
+        });
+
+        controller.getGameController().onGameWon(() -> {
+            overlay = new GameWonOverlay(controller);
+            overlay.setOpacity(0.0);
+            overlay.requestFocus();
+
+            getChildren().add(overlay);
+
+            // If the user wants to continue, fade out and remove the overlay from the scene graph
+            ((GameWonOverlay)overlay).setOnContinue((e) -> {
+                FadeTransition fade = new FadeTransition(Duration.millis(250), overlay);
+                fade.setFromValue(1.0);
+                fade.setToValue(0.0);
+                fade.setCycleCount(1);
+
+                fade.setOnFinished((finished) -> {
+                    getChildren().remove(overlay);
+                });
+
+                requestFocus();
+                fade.play();
+            });
+
+            FadeTransition fade = new FadeTransition(Duration.millis(250), overlay);
+            fade.setFromValue(0.0);
+            fade.setToValue(1.0);
+            fade.setCycleCount(1);
+
+            fade.play();
+        });
     }
 
     /**
@@ -95,6 +150,12 @@ public class BoardView extends Pane{
         if(moveResult != null && moveResult.isInvalid()) return; //No need to update for invalid moves
 
         GameController game = controller.getGameController();
+
+        // If this is a new game or a move was undone, we can remove the overlay
+        boolean undo = moveResult != null && moveResult.wasUndoFlagSet();
+        if(game.getStatsManager().isNewGame() || undo){
+            getChildren().remove(overlay);
+        }
 
         // Remove all nodes from the scene graph
         getChildren().removeAll(cellViews);
@@ -117,7 +178,7 @@ public class BoardView extends Pane{
                 cellViews.add(view);
                 getChildren().add(view);
 
-                if((controller.getGameController().getStatsManager().isNewGame() && moveResult == null) || (c.isOriginCell() && c.getAge() == 0)){
+                if((game.getStatsManager().isNewGame() && moveResult == null) || (c.isOriginCell() && c.getAge() == 0)){
                     //Newly Created Cell that was spawned randomly
                     ScaleTransition scale = new ScaleTransition();
                     scale.setDuration(Duration.millis(150));
@@ -130,7 +191,7 @@ public class BoardView extends Pane{
                     scale.setToY(1.0);
 
                     scale.play();
-                }else if((moveResult != null && !moveResult.wasUndoFlagSet()) && !c.isOriginCell() && c.getAge() == 1){
+                }else if(undo && !c.isOriginCell() && c.getAge() == 1){
                     //Newly Merged Cell (Ignores undo)
 
                     CellView fatherView = new CellView(c.getFather());

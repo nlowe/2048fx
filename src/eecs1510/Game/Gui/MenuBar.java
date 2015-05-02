@@ -1,5 +1,6 @@
 package eecs1510.Game.Gui;
 
+import eecs1510.Game.Gui.Notification.NotificationType;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

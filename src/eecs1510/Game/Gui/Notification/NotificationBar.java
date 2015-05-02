@@ -1,4 +1,4 @@
-package eecs1510.Game.Gui;
+package eecs1510.Game.Gui.Notification;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;

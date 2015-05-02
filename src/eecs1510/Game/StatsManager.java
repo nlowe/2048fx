@@ -1,7 +1,7 @@
 package eecs1510.Game;
 
 import eecs1510.Game.Gui.MainWindow;
-import eecs1510.Game.Gui.NotificationType;
+import eecs1510.Game.Gui.Notification.NotificationType;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;

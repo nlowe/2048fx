@@ -29,6 +29,21 @@
     -fx-fill: #776e65;
 }
 
+.overlay {
+    -fx-background-color: rgba(256,256,256, 0.7);
+}
+
+.overlay .label {
+    -fx-font-weight: bold;
+    -fx-font-size: 24;
+}
+
+.overlay .title {
+    -fx-font-weight: bold;
+    -fx-font-size: 72;
+    -fx-effect: dropshadow(one-pass-box, black, 2, 0.0, 0, 0);
+}
+
 .notification {
     -fx-background-color: rgba(17, 26, 207, 0.5);
 }

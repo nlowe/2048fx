@@ -1,4 +1,4 @@
-package eecs1510.Game.Gui;
+package eecs1510.Game.Gui.Notification;
 
 /**
  * Created by nathan on 4/23/15

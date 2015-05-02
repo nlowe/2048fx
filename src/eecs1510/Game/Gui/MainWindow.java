@@ -1,6 +1,7 @@
 package eecs1510.Game.Gui;
 
 import eecs1510.Game.GameController;
+import eecs1510.Game.Gui.Notification.NotificationType;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
