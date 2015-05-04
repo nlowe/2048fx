@@ -20,19 +20,26 @@ public class GameWonOverlay extends BoardOverlay{
         super(controller);
         getStyleClass().add("won");
 
+        int row = 0;
+
         Label title = new Label("You Win!");
         title.getStyleClass().add("title");
-        add(title, 0, 0, 2, 1);
+        add(title, 0, row++, 2, 1);
         setHalignment(title, HPos.CENTER);
 
-        add(new Label("Total Score:"), 0, 1);
-        add(new Label(String.valueOf(controller.getGameController().getStatsManager().getScore())), 1, 1);
+        add(new Label("Total Score:"), 0, row);
+        add(new Label(String.valueOf(controller.getGameController().getStatsManager().getScore())), 1, row++);
 
-        add(new Label("Turns:"), 0, 2);
-        add(new Label(String.valueOf(controller.getGameController().getStatsManager().getTurnCount())), 1, 2);
+        add(new Label("Turns:"), 0, row);
+        add(new Label(String.valueOf(controller.getGameController().getStatsManager().getTurnCount())), 1, row++);
 
-        add(new Label("Total merged Cells:"), 0, 3);
-        add(new Label(String.valueOf(controller.getGameController().getStatsManager().getTotalMerged())), 1, 3);
+        add(new Label("Total merged Cells:"), 0, row);
+        add(new Label(String.valueOf(controller.getGameController().getStatsManager().getTotalMerged())), 1, row++);
+
+        if(controller.getGameController().getStatsManager().wasNewHighScoreSet()){
+            add(new Label("New High Score!"), 0, row);
+            add(new Label(String.valueOf(controller.getGameController().getStatsManager().getHighScore())), 1, row++);
+        }
 
         Button keepPlaying = new Button("Keep Playing");
         keepPlaying.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -42,7 +49,7 @@ public class GameWonOverlay extends BoardOverlay{
                 keepPlayingHandler.handle(e);
             }
         });
-        add(keepPlaying, 0, 4);
+        add(keepPlaying, 0, row);
         setFillWidth(keepPlaying, true);
         setHgrow(keepPlaying, Priority.ALWAYS);
 
@@ -52,7 +59,7 @@ public class GameWonOverlay extends BoardOverlay{
         quit.setOnAction((e) -> {
             Platform.exit();
         });
-        add(quit, 1, 4);
+        add(quit, 1, row);
         setFillWidth(keepPlaying, true);
         setHgrow(quit, Priority.ALWAYS);
     }

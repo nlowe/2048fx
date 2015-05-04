@@ -197,6 +197,10 @@ public class StatsManager {
         return newGame.get();
     }
 
+    public boolean wasNewHighScoreSet(){
+        return notifiedHighScore;
+    }
+
     public ReadOnlyBooleanProperty newGameProperty() {
         return newGame.getReadOnlyProperty();
     }

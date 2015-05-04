@@ -6,6 +6,7 @@ import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.AudioClip;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -96,6 +97,12 @@ public class BoardView extends Pane{
             fade.setToValue(1.0);
             fade.setCycleCount(1);
 
+            if(controller.getGameController().getStatsManager().wasNewHighScoreSet()){
+                fade.setOnFinished((e) -> {
+                    playTaDa();
+                });
+            }
+
             PauseTransition delay = new PauseTransition(Duration.seconds(5));
             delay.setOnFinished((e) -> {
                 // Exit after 2 seconds as per assignment specification
@@ -132,6 +139,12 @@ public class BoardView extends Pane{
             fade.setFromValue(0.0);
             fade.setToValue(1.0);
             fade.setCycleCount(1);
+
+            if(controller.getGameController().getStatsManager().wasNewHighScoreSet()){
+                fade.setOnFinished((e) -> {
+                    playTaDa();
+                });
+            }
 
             fade.play();
         });
@@ -337,5 +350,9 @@ public class BoardView extends Pane{
             notificationTransition.setCycleCount(1);
             notificationTransition.play();
         }
+    }
+
+    private void playTaDa(){
+        new AudioClip(MainWindow.class.getResource("res/TADA.WAV").toString()).play(1.0);
     }
 }
