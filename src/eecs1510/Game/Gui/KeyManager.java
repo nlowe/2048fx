@@ -35,7 +35,7 @@ public class KeyManager {
                 case S: controller.trySaveGame(); return true;
                 case L: controller.tryStartSavedGame(); return true;
                 case H: controller.showHelpDialog(); return true;
-                case K: Platform.exit();
+                case K: controller.shutdownGame(); return true;
                 default: return false;
             }
         }else{

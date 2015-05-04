@@ -106,7 +106,7 @@ public class BoardView extends Pane{
             PauseTransition delay = new PauseTransition(Duration.seconds(5));
             delay.setOnFinished((e) -> {
                 // Exit after 2 seconds as per assignment specification
-                Platform.exit();
+                controller.shutdownGame();
             });
             delay.setCycleCount(1);
 

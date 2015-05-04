@@ -3,6 +3,7 @@ package eecs1510.Game.Gui;
 import eecs1510.Game.GameController;
 import eecs1510.Game.Gui.Notification.NotificationType;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -52,7 +53,7 @@ public class MainWindow extends Application {
 
         // Always save the high score when closing down
         primaryStage.setOnCloseRequest(request -> {
-            controller.saveHighScore();
+            shutdownGame();
         });
 
         // Add the scene to the stage, make the stage not resizeable, set the title, and show
@@ -60,6 +61,11 @@ public class MainWindow extends Application {
         primaryStage.setScene(gameScene);
         primaryStage.setTitle("2048fx");
         primaryStage.show();
+    }
+
+    public void shutdownGame(){
+        controller.saveHighScore();
+        Platform.exit();
     }
 
     /**

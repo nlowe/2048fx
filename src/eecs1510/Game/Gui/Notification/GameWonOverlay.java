@@ -57,7 +57,7 @@ public class GameWonOverlay extends BoardOverlay{
         quit.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         quit.setMinHeight(60);
         quit.setOnAction((e) -> {
-            Platform.exit();
+            controller.shutdownGame();
         });
         add(quit, 1, row);
         setFillWidth(keepPlaying, true);
