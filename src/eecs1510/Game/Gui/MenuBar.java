@@ -123,9 +123,15 @@ public class MenuBar extends ToolBar {
             controller.showHelpDialog();
         });
 
+        Button exit = createButton("res/icons/exit.png", "Exit", (e) -> {
+            controller.shutdownGame();
+        });
+
         this.getItems().addAll(loadGame, saveGame, new Separator(Orientation.VERTICAL), newGame,
-                leftSpacer, turnsLabel, turns, scoreLabel, score, bestLabel, best, rightSpacer,
-                undo, new Separator(Orientation.VERTICAL), help
+                leftSpacer, turnsLabel, turns, new Separator(Orientation.VERTICAL),
+                scoreLabel, score, new Separator(Orientation.VERTICAL),
+                bestLabel, best, rightSpacer,
+                undo, new Separator(Orientation.VERTICAL), help, exit
         );
 
         // Handle key events on the off chance that the menu is focused
