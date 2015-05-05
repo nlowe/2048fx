@@ -43,6 +43,11 @@ public class MainWindow extends Application {
         keyManager = new KeyManager(this);
 
         saveGameFile = new File(controller.getLastGamePath());
+        controller.onMoveComplete((move) -> {
+            if(controller.getStatsManager().isNewGame()){
+                keyManager.setIgnoreEvents(false);
+            }
+        });
 
         // Layout Components
         BorderPane root = new BorderPane();

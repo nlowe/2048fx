@@ -1,7 +1,6 @@
 package eecs1510.Game;
 
 import eecs1510.Game.Gui.MainWindow;
-import javafx.application.Platform;
 
 import java.io.*;
 import java.util.ArrayList;

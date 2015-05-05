@@ -2,6 +2,8 @@ package eecs1510.Game.Gui;
 
 import eecs1510.Game.Direction;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -14,6 +16,8 @@ public class KeyManager {
 
     private final MainWindow controller;
 
+    private final BooleanProperty ignoreEvents = new SimpleBooleanProperty(false);
+
     public KeyManager(MainWindow controller){
         this.controller = controller;
     }
@@ -25,6 +29,8 @@ public class KeyManager {
      * @return true Iff the controller should accept the event
      */
     public boolean handleKey(KeyEvent e){
+        if(getIgnoreEvents()) return false;
+
         if(e.isControlDown() && e.getCode().equals(KeyCode.Z)){
             // Ctrl+Z
             controller.getGameController().undoMove();
@@ -48,5 +54,17 @@ public class KeyManager {
                 default: return false;
             }
         }
+    }
+
+    public boolean getIgnoreEvents() {
+        return ignoreEvents.get();
+    }
+
+    public BooleanProperty ignoreEventsProperty() {
+        return ignoreEvents;
+    }
+
+    public void setIgnoreEvents(boolean b){
+        ignoreEvents.setValue(b);
     }
 }

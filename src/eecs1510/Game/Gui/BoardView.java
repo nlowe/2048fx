@@ -111,6 +111,7 @@ public class BoardView extends Pane{
             delay.setCycleCount(1);
 
             new SequentialTransition(overlay, fade, delay).play();
+            controller.getKeyManager().setIgnoreEvents(true);
         });
 
         controller.getGameController().onGameWon(() -> {
@@ -133,6 +134,7 @@ public class BoardView extends Pane{
 
                 requestFocus();
                 fade.play();
+                controller.getKeyManager().setIgnoreEvents(false);
             });
 
             FadeTransition fade = new FadeTransition(Duration.millis(250), overlay);
@@ -146,6 +148,7 @@ public class BoardView extends Pane{
                 });
             }
 
+            controller.getKeyManager().setIgnoreEvents(true);
             fade.play();
         });
     }
