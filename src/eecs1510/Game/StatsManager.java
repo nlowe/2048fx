@@ -50,7 +50,7 @@ public class StatsManager {
             if (newValue.intValue() > getHighScore()) {
                 highScoreProperty.set(newValue.intValue());
                 if (!notifiedHighScore) {
-                    controller.getBoardRenderer().displayNotification("New High Score: " + newValue.intValue(), 3, NotificationType.INFO);
+                    controller.getBoardRenderer().displayNotification("New High Score: " + newValue.intValue(), 3, NotificationType.INFO, false);
                     notifiedHighScore = true;
                 }
             }

@@ -114,7 +114,7 @@ public class MenuBar extends ToolBar {
             // Attempt to undo the most recent move
             boolean undone = controller.getGameController().undoMove();
             if(!undone){
-                controller.getBoardRenderer().displayNotification("Can't undo move!", 2, NotificationType.ERROR);
+                controller.getBoardRenderer().displayNotification("Can't undo move!", 2, NotificationType.ERROR, false);
             }
         });
 

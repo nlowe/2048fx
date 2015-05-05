@@ -3,7 +3,6 @@ package eecs1510.Game.Gui;
 import eecs1510.Game.*;
 import eecs1510.Game.Gui.Notification.*;
 import javafx.animation.*;
-import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.AudioClip;
@@ -78,7 +77,7 @@ public class BoardView extends Pane{
         // Update the view after every move
         controller.getGameController().onMoveComplete((moveResult) -> {
             if (moveResult != null && moveResult.isInvalid()) {
-                displayNotification("Invalid Move!", 3, NotificationType.WARNING);
+                displayNotification("Invalid Move!", 3, NotificationType.WARNING, true);
             } else {
                 updateView(moveResult);
             }
@@ -304,12 +303,22 @@ public class BoardView extends Pane{
     /**
      * Queue's up a notification to be displayed. If there is no other notifications in the queue,
      * the notification will be displayed immediately
-     *
-     * @param text  the Text of the notification
+     *  @param text  the Text of the notification
      * @param duration  the duration in seconds
      * @param priority  the priority (INFO, WARNING, or ERROR)
+     * @param overrideExisting
      */
-    public void displayNotification(String text, int duration, NotificationType priority){
+    public void displayNotification(String text, int duration, NotificationType priority, boolean overrideExisting){
+        if(overrideExisting){
+            notifications.clear();
+
+            if(notification != null){
+                notificationTransition.stop();
+                getChildren().remove(notification);
+                notification = null;
+            }
+        }
+
         notifications.push(new NotificationBar(text, duration, priority));
         updateDisplayedNotifications();
     }

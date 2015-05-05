@@ -100,7 +100,7 @@ public class MainWindow extends Application {
 
         boolean result = controller.startGameFromFile(f.getPath());
         if(!result){
-            board.displayNotification("Error Loading Game", 1, NotificationType.ERROR);
+            board.displayNotification("Error Loading Game", 1, NotificationType.ERROR, false);
             saveGameFile = null;
         }else{
             saveGameFile = f;
@@ -133,9 +133,9 @@ public class MainWindow extends Application {
 
         boolean result = controller.saveGame(saveGameFile.getPath());
         if(result){
-            board.displayNotification("Game Saved", 1, NotificationType.INFO);
+            board.displayNotification("Game Saved", 1, NotificationType.INFO, false);
         }else{
-            board.displayNotification("Error Saving Game", 1, NotificationType.ERROR);
+            board.displayNotification("Error Saving Game", 1, NotificationType.ERROR, false);
         }
     }
 

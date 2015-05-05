@@ -68,13 +68,13 @@ public class GameController {
     public void startNewGame(){
         undoCounter = 0;
         statsManager.reset(lastHighScore);
-//        board = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
-        board = new Cell[][]{
-                {new Cell(null, null, 1024, 0, 0), new Cell(null, null, 1024, 1, 0), null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-        };
+        board = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
+//        board = new Cell[][]{
+//                {new Cell(null, null, 1024, 0, 0), new Cell(null, null, 1024, 1, 0), null, null},
+//                {null, null, null, null},
+//                {null, null, null, null},
+//                {null, null, null, null}
+//        };
 
         randomizer = new Random();
 
