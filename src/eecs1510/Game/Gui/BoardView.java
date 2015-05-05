@@ -207,7 +207,7 @@ public class BoardView extends Pane{
                     scale.setToY(1.0);
 
                     scale.play();
-                }else if(undo && !c.isOriginCell() && c.getAge() == 1){
+                }else if(!undo && !c.isOriginCell() && c.getAge() == 1){
                     //Newly Merged Cell (Ignores undo)
 
                     CellView fatherView = new CellView(c.getFather());
