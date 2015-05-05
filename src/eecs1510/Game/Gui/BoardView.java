@@ -84,33 +84,7 @@ public class BoardView extends Pane{
         });
 
         controller.getGameController().onGameLost(() -> {
-            overlay = new GameOverOverlay(controller);
-            overlay.setOpacity(0.0);
-            overlay.requestFocus();
-
-            getChildren().add(overlay);
-
-            // Fade the overlay up from 0 opacity to full opacity
-            FadeTransition fade = new FadeTransition(Duration.millis(250), overlay);
-            fade.setFromValue(0.0);
-            fade.setToValue(1.0);
-            fade.setCycleCount(1);
-
-            if(controller.getGameController().getStatsManager().wasNewHighScoreSet()){
-                fade.setOnFinished((e) -> {
-                    playTaDa();
-                });
-            }
-
-            PauseTransition delay = new PauseTransition(Duration.seconds(5));
-            delay.setOnFinished((e) -> {
-                // Exit after 2 seconds as per assignment specification
-                controller.shutdownGame();
-            });
-            delay.setCycleCount(1);
-
-            new SequentialTransition(overlay, fade, delay).play();
-            controller.getKeyManager().setIgnoreEvents(true);
+            showGameOverOverlay();
         });
 
         controller.getGameController().onGameWon(() -> {
@@ -121,7 +95,7 @@ public class BoardView extends Pane{
             getChildren().add(overlay);
 
             // If the user wants to continue, fade out and remove the overlay from the scene graph
-            ((GameWonOverlay)overlay).setOnContinue((e) -> {
+            ((GameWonOverlay) overlay).setOnContinue((e) -> {
                 FadeTransition fade = new FadeTransition(Duration.millis(250), overlay);
                 fade.setFromValue(1.0);
                 fade.setToValue(0.0);
@@ -141,7 +115,7 @@ public class BoardView extends Pane{
             fade.setToValue(1.0);
             fade.setCycleCount(1);
 
-            if(controller.getGameController().getStatsManager().wasNewHighScoreSet()){
+            if (controller.getGameController().getStatsManager().wasNewHighScoreSet()) {
                 fade.setOnFinished((e) -> {
                     playTaDa();
                 });
@@ -362,6 +336,36 @@ public class BoardView extends Pane{
             notificationTransition.setCycleCount(1);
             notificationTransition.play();
         }
+    }
+
+    public void showGameOverOverlay() {
+        overlay = new GameOverOverlay(controller);
+        overlay.setOpacity(0.0);
+        overlay.requestFocus();
+
+        getChildren().add(overlay);
+
+        // Fade the overlay up from 0 opacity to full opacity
+        FadeTransition fade = new FadeTransition(Duration.millis(250), overlay);
+        fade.setFromValue(0.0);
+        fade.setToValue(1.0);
+        fade.setCycleCount(1);
+
+        if(controller.getGameController().getStatsManager().wasNewHighScoreSet()){
+            fade.setOnFinished((e) -> {
+                playTaDa();
+            });
+        }
+
+        PauseTransition delay = new PauseTransition(Duration.seconds(5));
+        delay.setOnFinished((e) -> {
+            // Exit after 2 seconds as per assignment specification
+            controller.shutdownGame();
+        });
+        delay.setCycleCount(1);
+
+        new SequentialTransition(overlay, fade, delay).play();
+        controller.getKeyManager().setIgnoreEvents(true);
     }
 
     private void playTaDa(){

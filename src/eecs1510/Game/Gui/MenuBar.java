@@ -124,7 +124,7 @@ public class MenuBar extends ToolBar {
         });
 
         Button exit = createButton("res/icons/exit.png", "Exit", (e) -> {
-            controller.shutdownGame();
+            controller.getBoardRenderer().showGameOverOverlay();
         });
 
         this.getItems().addAll(loadGame, saveGame, new Separator(Orientation.VERTICAL), newGame,
