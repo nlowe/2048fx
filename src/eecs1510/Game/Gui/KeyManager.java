@@ -32,8 +32,8 @@ public class KeyManager {
         }else if(e.isAltDown()){
             // Special Keys
             switch(e.getCode()){
-                case S: controller.trySaveGame(); return true;
-                case L: controller.tryStartSavedGame(); return true;
+                case S: controller.trySaveGame(false); return true;
+                case L: controller.tryStartSavedGame(false); return true;
                 case H: controller.showHelpDialog(); return true;
                 case K: controller.shutdownGame(); return true;
                 default: return false;

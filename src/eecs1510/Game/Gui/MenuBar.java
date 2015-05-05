@@ -51,11 +51,11 @@ public class MenuBar extends ToolBar {
         this.setPrefHeight(40);
 
         Button loadGame = createButton("res/icons/ic_folder_open_black_24dp.png", "Resume Game", (e) -> {
-            controller.tryStartSavedGame();
+            controller.tryStartSavedGame(true);
         });
 
         Button saveGame = createButton("res/icons/ic_save_black_24dp.png", "Save Game", (e) -> {
-            controller.trySaveGame();
+            controller.trySaveGame(false);
         });
 
         Button newGame  = createButton("res/icons/ic_add_box_black_24dp.png", "New Game", (e) -> {

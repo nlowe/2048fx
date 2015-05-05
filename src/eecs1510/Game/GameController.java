@@ -424,6 +424,8 @@ public class GameController {
                 cell.storeCell(out);
             }
 
+
+            lastGamePath = path;
             return true;
         }catch(IOException ex){
             ex.printStackTrace();
@@ -473,12 +475,20 @@ public class GameController {
         System.out.println("Trying to save high score to " + HIGH_SCORE_FILE.getAbsolutePath());
         try(DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(HIGH_SCORE_FILE)))){
             out.writeInt(getStatsManager().getHighScore());
-            out.writeUTF("!NO_PREVIOUS_GAME!");
+            out.writeUTF(lastGamePath);
 
             out.flush();
         } catch(IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getLastGamePath(){
+        return lastGamePath;
+    }
+
+    public void setLastGamePath(String p){
+        lastGamePath = p == null || p.isEmpty() ? NO_PREVIOUS_GAME : p;
     }
 
     public void onGameLost(SimpleListener listener){ gameLostListeners.add(listener); }
