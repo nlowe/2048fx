@@ -45,18 +45,43 @@ public class MenuBar extends ToolBar {
         return b;
     }
 
+    private SplitMenuButton createSplitButton(String resourcePath, String tooltip, EventHandler<ActionEvent> eventHandler, MenuItem...items){
+        SplitMenuButton b = new SplitMenuButton();
+        b.setGraphic(new ImageView(new Image(MainWindow.class.getResourceAsStream(resourcePath))));
+
+        if(tooltip != null){
+            Tooltip t = new Tooltip();
+            t.setText(tooltip);
+            b.setTooltip(t);
+        }
+
+        if(eventHandler != null){
+            b.setOnAction(eventHandler);
+        }
+
+        b.getItems().addAll(items);
+
+        return b;
+    }
+
+
     public MenuBar(MainWindow controller){
         super();
 
         this.setPrefHeight(40);
 
         Button loadGame = createButton("res/icons/ic_folder_open_black_24dp.png", "Resume Game", (e) -> {
-            controller.tryStartSavedGame(true);
+            controller.tryStartSavedGame(false);
         });
 
-        Button saveGame = createButton("res/icons/ic_save_black_24dp.png", "Save Game", (e) -> {
-            controller.trySaveGame(false);
+        MenuItem saveAs = new MenuItem("Save As...");
+        saveAs.setOnAction((e) -> {
+            controller.trySaveGame(true);
         });
+
+        SplitMenuButton saveGame = createSplitButton("res/icons/ic_save_black_24dp.png", "Save Game", (e) -> {
+            controller.trySaveGame(false);
+        }, saveAs);
 
         Button newGame  = createButton("res/icons/ic_add_box_black_24dp.png", "New Game", (e) -> {
             //FIXME: Prompt to save

@@ -118,7 +118,17 @@ public class MainWindow extends Application {
             dialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("2048 Files", "*.dat"));
             dialog.setTitle("Save Game");
 
-            saveGameFile = dialog.showSaveDialog(primaryStage);
+            File f = dialog.showSaveDialog(primaryStage);
+
+            if(f != null){
+                saveGameFile = f;
+            }else{
+                return;
+            }
+        }
+
+        if(!saveGameFile.getName().toLowerCase().endsWith(".dat")){
+            saveGameFile = new File(saveGameFile.getPath() + ".dat");
         }
 
         boolean result = controller.saveGame(saveGameFile.getPath());
