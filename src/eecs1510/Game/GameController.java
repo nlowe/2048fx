@@ -19,6 +19,8 @@ public class GameController {
     public static final String NO_PREVIOUS_GAME = "!NO_PREVIOUS_GAME!";
     /** The default location for the high score file */
     public static final File HIGH_SCORE_FILE = new File(System.getenv("user.home"), "HighScore.dat");
+    /** The version of the save game format */
+    public static final int SAVE_FILE_FORMAT_VERSION = 2;
 
     /** The internal representation of the game board*/
     private Cell[][] board;
@@ -413,6 +415,8 @@ public class GameController {
      */
     public boolean saveGame(String path){
         try(DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path)))){
+            out.writeInt(SAVE_FILE_FORMAT_VERSION);
+
             statsManager.save(out);
 
             out.writeInt(undoCounter);
@@ -442,6 +446,13 @@ public class GameController {
      */
     public boolean startGameFromFile(String path){
         try(DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(path)))){
+            int version = in.readInt();
+
+            if(version != SAVE_FILE_FORMAT_VERSION){
+                System.err.println("The file at " + path + " uses an older save game version and cannot be opened at this time");
+                return false;
+            }
+
             statsManager.loadFromFile(in, lastHighScore);
 
             int undoCounter = in.readInt();

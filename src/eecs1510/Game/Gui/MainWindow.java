@@ -90,7 +90,7 @@ public class MainWindow extends Application {
      */
     public void tryStartSavedGame(boolean usePreviousGame){
         File f = saveGameFile;
-        if(!usePreviousGame){
+        if(!usePreviousGame || saveGameFile == null || !saveGameFile.exists()){
             FileChooser dialog = new FileChooser();
             dialog.setInitialDirectory(new File(System.getProperty("user.home")));
             dialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("2048 Files", "*.dat"));
@@ -101,6 +101,7 @@ public class MainWindow extends Application {
         boolean result = controller.startGameFromFile(f.getPath());
         if(!result){
             board.displayNotification("Error Loading Game", 1, NotificationType.ERROR);
+            saveGameFile = null;
         }else{
             saveGameFile = f;
             board.updateView(null);

@@ -153,6 +153,8 @@ public class StatsManager {
     public void loadFromFile(DataInput in, int highScore) throws IOException {
         reset(highScore);
 
+        notifiedHighScore = in.readBoolean();
+
         turnCount.set(in.readInt());
 
         int count = in.readInt();
@@ -180,6 +182,8 @@ public class StatsManager {
      * @throws IOException
      */
     public void save(DataOutputStream out) throws IOException {
+        out.writeBoolean(notifiedHighScore);
+
         out.writeInt(getTurnCount());
 
         out.writeInt(score.count());

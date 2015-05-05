@@ -10,13 +10,15 @@ recently saved game
 * **utf8 `String`**: Path to most recently saved game
 
 ## Saved Games
+> Current Version: 2
+
 Saved games contain the remainder of the stats and all cells created during the life of a game.
 
 First, all cells on the board currently are saved, and then the history is traversed, saving
 the state of cells and their composing cells along the way in a recursive fashion.
 
 The file format is as follows:
-
+* **signed `int`**: The version of the disk format
 * **signed `int`**: Total Number of Moves thus far
 * **signed `int`**: Score Stack Size
 * `For Each`
