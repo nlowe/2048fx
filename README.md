@@ -16,8 +16,8 @@ a JDK 8 installation.
 
 - [x] Ability to play the game
 - [x] Help Menu
-- [ ] Saving / Loading games
-- [ ] A sensible theme - In progress!
+- [x] Saving / Loading games
+- [x] A sensible theme
 - [x] Animations
 - [ ] And much more!
 

@@ -175,7 +175,8 @@ public class BoardView extends Pane{
                 cellViews.add(view);
                 getChildren().add(view);
 
-                if(moveResult != null && moveResult.isInvalid()){
+                if(moveResult != null && moveResult.isInvalid())
+                {
                     RotateTransition rl = new RotateTransition(Duration.millis(40), view);
                     rl.setFromAngle(0);
                     rl.setToAngle(-15);
