@@ -83,9 +83,9 @@ public class BoardView extends Pane{
             if (moveResult != null && moveResult.isInvalid())
             {
                 displayNotification("Invalid Move!", 3, NotificationType.WARNING, true);
-            } else {
-                updateView(moveResult);
             }
+
+            updateView(moveResult);
         });
 
         controller.getGameController().onGameLost(() -> {
@@ -143,8 +143,6 @@ public class BoardView extends Pane{
      */
     protected void updateView(MoveResult moveResult)
     {
-        if(moveResult != null && moveResult.isInvalid()) return; //No need to update for invalid moves
-
         GameController game = controller.getGameController();
 
         // If this is a new game or a move was undone, we can remove the overlay
@@ -177,8 +175,25 @@ public class BoardView extends Pane{
                 cellViews.add(view);
                 getChildren().add(view);
 
-                if((game.getStatsManager().isNewGame() && moveResult == null) || (c.isOriginCell() && c.getAge() == 0))
-                {
+                if(moveResult != null && moveResult.isInvalid()){
+                    RotateTransition rl = new RotateTransition(Duration.millis(40), view);
+                    rl.setFromAngle(0);
+                    rl.setToAngle(-15);
+                    rl.setCycleCount(1);
+
+                    RotateTransition rr = new RotateTransition(Duration.millis(80), view);
+                    rr.setFromAngle(-15);
+                    rr.setToAngle(15);
+                    rr.setCycleCount(1);
+
+                    RotateTransition restore = new RotateTransition(Duration.millis(40), view);
+                    restore.setFromAngle(15);
+                    restore.setToAngle(0);
+                    restore.setCycleCount(1);
+
+                    new SequentialTransition(view, rl, rr, restore).play();
+
+                } else if((game.getStatsManager().isNewGame() && moveResult == null) || (c.isOriginCell() && c.getAge() == 0)) {
                     //Newly Created Cell that was spawned randomly
                     ScaleTransition scale = new ScaleTransition();
                     scale.setDuration(Duration.millis(150));
