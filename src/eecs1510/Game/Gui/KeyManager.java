@@ -1,7 +1,6 @@
 package eecs1510.Game.Gui;
 
 import eecs1510.Game.Direction;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.input.KeyCode;
@@ -12,13 +11,15 @@ import javafx.scene.input.KeyEvent;
  *
  * Handles key events from the views and passes them off to the appropriate controllers
  */
-public class KeyManager {
+public class KeyManager
+{
 
     private final MainWindow controller;
 
     private final BooleanProperty ignoreEvents = new SimpleBooleanProperty(false);
 
-    public KeyManager(MainWindow controller){
+    public KeyManager(MainWindow controller)
+    {
         this.controller = controller;
     }
 
@@ -28,25 +29,29 @@ public class KeyManager {
      * @param e the KeyEvent to process
      * @return true Iff the controller should accept the event
      */
-    public boolean handleKey(KeyEvent e){
+    public boolean handleKey(KeyEvent e)
+    {
         if(getIgnoreEvents()) return false;
 
-        if(e.isControlDown() && e.getCode().equals(KeyCode.Z)){
+        if(e.isControlDown() && e.getCode().equals(KeyCode.Z))
+        {
             // Ctrl+Z
             controller.getGameController().undoMove();
             return true;
-        }else if(e.isAltDown()){
+        } else if(e.isAltDown()) {
             // Special Keys
-            switch(e.getCode()){
+            switch(e.getCode())
+            {
                 case S: controller.trySaveGame(false); return true;
                 case L: controller.tryStartSavedGame(false); return true;
                 case H: controller.showHelpDialog(); return true;
                 case K: controller.shutdownGame(); return true;
                 default: return false;
             }
-        }else{
+        } else {
             // Movement
-            switch(e.getCode()){
+            switch(e.getCode())
+            {
                 case UP:    controller.getGameController().takeMove(Direction.NORTH); return true;
                 case RIGHT: controller.getGameController().takeMove(Direction.EAST);  return true;
                 case DOWN:  controller.getGameController().takeMove(Direction.SOUTH); return true;
@@ -56,15 +61,18 @@ public class KeyManager {
         }
     }
 
-    public boolean getIgnoreEvents() {
+    public boolean getIgnoreEvents()
+    {
         return ignoreEvents.get();
     }
 
-    public BooleanProperty ignoreEventsProperty() {
+    public BooleanProperty ignoreEventsProperty()
+    {
         return ignoreEvents;
     }
 
-    public void setIgnoreEvents(boolean b){
+    public void setIgnoreEvents(boolean b)
+    {
         ignoreEvents.setValue(b);
     }
 }

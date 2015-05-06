@@ -5,9 +5,10 @@ package eecs1510.Game;
  *
  * An enum containing the direction vectors, used in merging
  */
-public enum Direction {
-        NORTH,
-        SOUTH,
-        EAST,
-        WEST
+public enum Direction
+{
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST
 }

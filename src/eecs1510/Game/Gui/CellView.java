@@ -10,7 +10,8 @@ import javafx.scene.text.Text;
  *
  * A view for individual 132px x 132px cells
  */
-public class CellView extends Pane{
+public class CellView extends Pane
+{
 
     /**
      * The colors for each cell, indexed by power of 2 with the
@@ -36,7 +37,8 @@ public class CellView extends Pane{
     /** The Cell Model that this view is tied to */
     protected final Cell model;
 
-    public CellView(Cell model){
+    public CellView(Cell model)
+    {
         setMaxSize(132, 132);
         setMinSize(132, 132);
 

@@ -12,11 +12,13 @@ import javafx.scene.layout.Priority;
 /**
  * Created by nathan on 5/1/15
  */
-public class GameWonOverlay extends BoardOverlay{
+public class GameWonOverlay extends BoardOverlay
+{
 
     private EventHandler<ActionEvent> keepPlayingHandler = null;
 
-    public GameWonOverlay(MainWindow controller){
+    public GameWonOverlay(MainWindow controller)
+    {
         super(controller);
         getStyleClass().add("won");
 
@@ -36,7 +38,8 @@ public class GameWonOverlay extends BoardOverlay{
         add(new Label("Total merged Cells:"), 0, row);
         add(new Label(String.valueOf(controller.getGameController().getStatsManager().getTotalMerged())), 1, row++);
 
-        if(controller.getGameController().getStatsManager().wasNewHighScoreSet()){
+        if(controller.getGameController().getStatsManager().wasNewHighScoreSet())
+        {
             add(new Label("New High Score!"), 0, row);
             add(new Label(String.valueOf(controller.getGameController().getStatsManager().getHighScore())), 1, row++);
         }
@@ -45,7 +48,8 @@ public class GameWonOverlay extends BoardOverlay{
         keepPlaying.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         keepPlaying.setMinHeight(60);
         keepPlaying.setOnAction((e) -> {
-            if (keepPlayingHandler != null) {
+            if (keepPlayingHandler != null)
+            {
                 keepPlayingHandler.handle(e);
             }
         });
@@ -64,7 +68,8 @@ public class GameWonOverlay extends BoardOverlay{
         setHgrow(quit, Priority.ALWAYS);
     }
 
-    public void setOnContinue(EventHandler<ActionEvent> handler){
+    public void setOnContinue(EventHandler<ActionEvent> handler)
+    {
         keepPlayingHandler = handler;
     }
 }

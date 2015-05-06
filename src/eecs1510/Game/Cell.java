@@ -16,7 +16,8 @@ import java.io.IOException;
  * including where a cell has been (for up to 11 turns) and what cells combined
  * (if any) to produce it.
  */
-public class Cell {
+public class Cell
+{
 
     /** The cell's previous x coordinate (or column index) */
     private final IntegerProperty lastBoardX;
@@ -42,11 +43,13 @@ public class Cell {
      */
     private int age = 0;
 
-    public Cell(Cell father, Cell mother, int value) {
+    public Cell(Cell father, Cell mother, int value)
+    {
         this(father, mother, value, mother.getBoardX(), mother.getBoardY());
     }
 
-    public Cell(Cell father, Cell mother, int value, int x, int y){
+    public Cell(Cell father, Cell mother, int value, int x, int y)
+    {
         positionHistory = new RingBuffer<>(11);
         positionHistory.push(new Vec2i(x, y));
 
@@ -56,7 +59,8 @@ public class Cell {
         lastBoardX = new SimpleIntegerProperty(x);
         boardX = new ReadOnlyIntegerWrapper(){
             @Override
-            public int get() {
+            public int get()
+            {
                 // The current x coordinate is always given by the x coordinate
                 // of the vector at the top of the position stack
                 return positionHistory.peek().x;
@@ -66,7 +70,8 @@ public class Cell {
         lastBoardY = new SimpleIntegerProperty(y);
         boardY = new ReadOnlyIntegerWrapper(){
             @Override
-            public int get() {
+            public int get()
+            {
                 // The current y coordinate is always given by the y coordinate
                 // of the vector at the top of the position stack
                 return positionHistory.peek().y;
@@ -83,8 +88,10 @@ public class Cell {
      * @param x
      * @param y
      */
-    public void move(int x, int y){
-        if(positionHistory.count() > 0){
+    public void move(int x, int y)
+    {
+        if(positionHistory.count() > 0)
+        {
             setMoveFrom(boardX.get(), boardY.get());
         }
         positionHistory.push(new Vec2i(x, y));
@@ -95,15 +102,17 @@ public class Cell {
      *
      * @return true if the cell should be decomposed or removed
      */
-    public boolean rollBack(){
-        if(--age >= 0){
+    public boolean rollBack()
+    {
+        if(--age >= 0)
+        {
             if(age == 0 && !isOriginCell()) return true; // Newly Merged Cell
 
             // Move to the previous location 'from' the current location
             Vec2i current = positionHistory.pop();
             setMoveFrom(current.x, current.y);
             return false;
-        }else{
+        } else {
             //Newly created cell
             return true;
         }
@@ -115,7 +124,8 @@ public class Cell {
      * @param x
      * @param y
      */
-    public void setMoveFrom(int x, int y){
+    public void setMoveFrom(int x, int y)
+    {
         lastBoardX.set(x);
         lastBoardY.set(y);
     }
@@ -129,14 +139,16 @@ public class Cell {
      * @return
      * @throws IOException
      */
-    public static Cell readCell(DataInputStream in) throws IOException {
+    public static Cell readCell(DataInputStream in) throws IOException
+    {
         int age = in.readInt();
         int value = in.readInt();
 
         RingBuffer<Vec2i> positionHistory = new RingBuffer<>(11);
 
         int depth = in.readInt();
-        for(int i=0; i<depth; i++){
+        for(int i=0; i<depth; i++)
+        {
             int x = in.readInt();
             int y = in.readInt();
 
@@ -148,7 +160,8 @@ public class Cell {
         Cell father = null;
         Cell mother = null;
 
-        if(!origin){
+        if(!origin)
+        {
             father = readCell(in);
             mother = readCell(in);
         }
@@ -169,21 +182,24 @@ public class Cell {
      * @param out the stream to read from
      * @throws IOException
      */
-    public void storeCell(DataOutputStream out) throws IOException {
+    public void storeCell(DataOutputStream out) throws IOException
+    {
         out.writeInt(getAge());
         out.writeInt(getCellValue());
 
         int depth = positionHistory.count();
 
         out.writeInt(depth);
-        for(int i=depth-1; i >= 0; i--){
+        for(int i=depth-1; i >= 0; i--)
+        {
             Vec2i pos = positionHistory.getElement(i);
             out.writeInt(pos.x);
             out.writeInt(pos.y);
         }
 
         out.writeBoolean(isOriginCell());
-        if(!isOriginCell()){
+        if(!isOriginCell())
+        {
             father.storeCell(out);
             mother.storeCell(out);
         }
@@ -191,48 +207,59 @@ public class Cell {
         System.out.println("Wrote " + this);
     }
 
-    public Cell getFather() {
+    public Cell getFather()
+    {
         return father;
     }
 
-    public Cell getMother() {
+    public Cell getMother()
+    {
         return mother;
     }
 
-    public int getCellValue() {
+    public int getCellValue()
+    {
         return cellValue.get();
     }
 
-    public ReadOnlyIntegerProperty cellValueProperty() {
+    public ReadOnlyIntegerProperty cellValueProperty()
+    {
         return cellValue;
     }
 
-    public int getBoardX() {
+    public int getBoardX()
+    {
         return boardX.get();
     }
 
-    public ReadOnlyIntegerProperty boardXProperty() {
+    public ReadOnlyIntegerProperty boardXProperty()
+    {
         return boardX;
     }
 
-    public int getBoardY() {
+    public int getBoardY()
+    {
         return boardY.get();
     }
 
-    public ReadOnlyIntegerProperty boardYProperty() {
+    public ReadOnlyIntegerProperty boardYProperty()
+    {
         return boardY;
     }
 
     @Override
-    public String toString(){
+    public String toString()
+    {
         return "{spawned: " + isOriginCell() + ", x: " + getBoardX() + ", y: " + getBoardY() + ", vx: " + (getBoardX() - getLastBoardX()) + ", vy:" + (getBoardY() - getLastBoardY()) + ", value: " + getCellValue() + ", age: " + age + ", positionStackSize: " + positionHistory.count() + "}";
     }
 
-    public int getAge(){
+    public int getAge()
+    {
         return age;
     }
 
-    public void survive(){
+    public void survive()
+    {
         age++;
     }
 
@@ -243,23 +270,28 @@ public class Cell {
      *
      * @return true iff this cell has no parents
      */
-    public boolean isOriginCell(){
+    public boolean isOriginCell()
+    {
         return father == null && mother == null;
     }
 
-    public int getLastBoardX() {
+    public int getLastBoardX()
+    {
         return lastBoardX.get();
     }
 
-    public ReadOnlyIntegerProperty lastBoardXProperty() {
+    public ReadOnlyIntegerProperty lastBoardXProperty()
+    {
         return lastBoardX;
     }
 
-    public int getLastBoardY() {
+    public int getLastBoardY()
+    {
         return lastBoardY.get();
     }
 
-    public ReadOnlyIntegerProperty lastBoardYProperty() {
+    public ReadOnlyIntegerProperty lastBoardYProperty()
+    {
         return lastBoardY;
     }
 }

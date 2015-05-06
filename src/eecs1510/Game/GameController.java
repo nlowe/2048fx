@@ -13,7 +13,8 @@ import java.util.function.Consumer;
  *
  * The main controller for a game. Controls game statistics and the board
  */
-public class GameController {
+public class GameController
+{
 
     /** The identifier used to indicate that no previous game was saved */
     public static final String NO_PREVIOUS_GAME = "!NO_PREVIOUS_GAME!";
@@ -48,14 +49,16 @@ public class GameController {
     /** The path to the most recent game played (and saved) */
     private String lastGamePath = NO_PREVIOUS_GAME;
 
-    public GameController(MainWindow w){
+    public GameController(MainWindow w)
+    {
 
         // Try to read the high score file
-        try(DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(HIGH_SCORE_FILE)))){
+        try(DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(HIGH_SCORE_FILE))))
+        {
             System.out.println("Reading stats from "  + HIGH_SCORE_FILE.getAbsolutePath());
             lastHighScore = in.readInt();
             lastGamePath = in.readUTF();
-        }catch(IOException e){
+        } catch(IOException e) {
             e.printStackTrace();
         }
 
@@ -65,16 +68,11 @@ public class GameController {
         startNewGame();
     }
 
-    public void startNewGame(){
+    public void startNewGame()
+    {
         undoCounter = 0;
         statsManager.reset(lastHighScore);
         board = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
-//        board = new Cell[][]{
-//                {new Cell(null, null, 1024, 0, 0), new Cell(null, null, 1024, 1, 0), null, null},
-//                {null, null, null, null},
-//                {null, null, null, null},
-//                {null, null, null, null}
-//        };
 
         randomizer = new Random();
 
@@ -89,7 +87,8 @@ public class GameController {
     /**
      * @return  the cell at the specified row and column
      */
-    public Cell cellAt(int row, int col){
+    public Cell cellAt(int row, int col)
+    {
         return board[row][col];
     }
 
@@ -99,10 +98,12 @@ public class GameController {
      * @param column The column to slice
      * @return a vertical slice of the board at the specified column
      */
-    private Cell[] slice(int column){
+    private Cell[] slice(int column)
+    {
         Cell[] result = new Cell[Rules.BOARD_SIZE];
 
-        for(int i=0; i< Rules.BOARD_SIZE; i++){
+        for(int i=0; i< Rules.BOARD_SIZE; i++)
+        {
             result[i] = board[i][column];
         }
 
@@ -113,7 +114,8 @@ public class GameController {
      * @param slice
      * @return a filtered array of the source <code>arr</code> with all null elements removed
      */
-    private Cell[] stripNull(Cell[] slice){
+    private Cell[] stripNull(Cell[] slice)
+    {
         return Arrays.stream(slice).filter((c) -> c != null).toArray(Cell[]::new);
     }
 
@@ -125,7 +127,8 @@ public class GameController {
      *
      * @param direction
      */
-    public void takeMove(Direction direction){
+    public void takeMove(Direction direction)
+    {
         //TODO: This needs refactored / optimized
 
         // If we're moving towards 0 for a slice, we need to merge left-to-right
@@ -136,13 +139,16 @@ public class GameController {
         int totalMergedValue = 0;
         Cell[][] newState = new Cell[size][size];
         
-        if(direction == Direction.NORTH || direction == Direction.SOUTH){
-            for(int column=0; column < size; column++){
+        if(direction == Direction.NORTH || direction == Direction.SOUTH)
+        {
+            for(int column=0; column < size; column++)
+            {
                 Cell[] filteredColumn = stripNull(slice(column));
                 if(filteredColumn.length == 0) continue;
 
                 // If there's more than one cell, try merging
-                if(filteredColumn.length > 1){
+                if(filteredColumn.length > 1)
+                {
                     MoveResult partial = merge(filteredColumn, LTR);
                     totalMerged += partial.mergeCount;
                     totalMergedValue += partial.mergeValue;
@@ -151,23 +157,28 @@ public class GameController {
                 }
 
                 // Copy in the new state
-                if(LTR){
-                    for(int row=0; row < size; row++){
+                if(LTR)
+                {
+                    for(int row=0; row < size; row++)
+                    {
                         newState[row][column] = row < filteredColumn.length ? filteredColumn[row] : null;
                     }
-                }else{
-                    for(int row = size - 1, i = filteredColumn.length - 1; row >= 0; row--, i--){
+                } else {
+                    for(int row = size - 1, i = filteredColumn.length - 1; row >= 0; row--, i--)
+                    {
                         newState[row][column] = i >= 0 ? filteredColumn[i] : null;
                     }
                 }
             }
-        }else{
-            for(int row = 0; row < size; row++){
+        } else {
+            for(int row = 0; row < size; row++)
+            {
                 Cell[] filteredRow = stripNull(board[row]);
                 if(filteredRow.length == 0) continue;
 
                 // If there's more than one cell, try merging
-                if(filteredRow.length > 1){
+                if(filteredRow.length > 1)
+                {
                     MoveResult partial = merge(filteredRow, LTR);
                     totalMerged += partial.mergeCount;
                     totalMergedValue += partial.mergeValue;
@@ -176,23 +187,27 @@ public class GameController {
                 }
 
                 // Copy in the new state
-                if(LTR){
-                    for(int column = 0; column < size; column ++){
+                if(LTR)
+                {
+                    for(int column = 0; column < size; column ++)
+                    {
                         newState[row][column] = column < filteredRow.length ? filteredRow[column] : null;
                     }
-                }else{
-                    for(int column = size - 1, i = filteredRow.length - 1; column >= 0; column--, i--){
+                } else {
+                    for(int column = size - 1, i = filteredRow.length - 1; column >= 0; column--, i--)
+                    {
                         newState[row][column] = i >= 0 ? filteredRow[i] : null;
                     }
                 }
             }
         }
 
-        if(totalMerged == 0 && Arrays.deepEquals(board, newState)){
+        if(totalMerged == 0 && Arrays.deepEquals(board, newState))
+        {
             // If we haven't merged anything and the new state is the same as the old one,
             // then by definition the move is invalid
             doMoveComplete(MoveResult.invalid());
-        }else{
+        } else {
             // Otherwise, copy in the new state
             setState(newState);
 
@@ -208,9 +223,10 @@ public class GameController {
             // Notify listeners
             doMoveComplete(new MoveResult(totalMerged, totalMergedValue));
 
-            if(lost){
+            if(lost)
+            {
                 doGameLost();
-            }else if(!notifiedWon && isGameWon()){
+            } else if(!notifiedWon && isGameWon()) {
                 notifiedWon = true;
                 doGameWon();
             }
@@ -226,23 +242,29 @@ public class GameController {
      *         of merged cells as well as the score gained by those merged
      *         cells for the specified slice of the game board
      */
-    public MoveResult merge(Cell[] source, boolean LTR){
+    public MoveResult merge(Cell[] source, boolean LTR)
+    {
         //TODO: This needs refactored / optimized
         int totalMerged = 0;
         int totalMergedValue = 0;
 
-        if(LTR){
-            for(int i=0; i < source.length - 1; i++){
-                if(source[i].getCellValue() == source[i+1].getCellValue()){
+        if(LTR)
+        {
+            for(int i=0; i < source.length - 1; i++)
+            {
+                if(source[i].getCellValue() == source[i+1].getCellValue())
+                {
                     source[i+1] = new Cell(source[i], source[i+1], source[i].getCellValue()*2);
                     source[i] = null;
                     totalMerged++;
                     totalMergedValue += source[++i].getCellValue();
                 }
             }
-        }else{
-            for(int i = source.length - 1; i >= 1; i--){
-                if(source[i].getCellValue() == source[i-1].getCellValue()){
+        } else {
+            for(int i = source.length - 1; i >= 1; i--)
+            {
+                if(source[i].getCellValue() == source[i-1].getCellValue())
+                {
                     source[i-1] = new Cell(source[i], source[i-1], source[i].getCellValue()*2);
                     source[i] = null;
                     totalMerged++;
@@ -258,14 +280,18 @@ public class GameController {
      * Copies in the new state for the game board, 'moving' cells to their locations if they exist
      * @param state the state to apply
      */
-    private void setState(Cell[][] state){
-        for(int row = 0; row < Rules.BOARD_SIZE; row++){
-            for(int col = 0; col < Rules.BOARD_SIZE; col++){
+    private void setState(Cell[][] state)
+    {
+        for(int row = 0; row < Rules.BOARD_SIZE; row++)
+        {
+            for(int col = 0; col < Rules.BOARD_SIZE; col++)
+            {
                 Cell c = state[row][col];
 
                 board[row][col] = c;
 
-                if(c != null){
+                if(c != null)
+                {
                     c.move(col, row);
                 }
             }
@@ -278,10 +304,12 @@ public class GameController {
      *
      * @return true if a value was able to be placed
      */
-    public boolean placeRandom(){
+    public boolean placeRandom()
+    {
         ArrayList<int[]> freeCells = getFreeCells();
 
-        if(freeCells.isEmpty()){
+        if(freeCells.isEmpty())
+        {
             return false;
         }
 
@@ -299,12 +327,16 @@ public class GameController {
     /**
      * @return an ArrayList of integer arrays pointing to the location of free cells.
      */
-    public ArrayList<int[]> getFreeCells(){
+    public ArrayList<int[]> getFreeCells()
+    {
         ArrayList<int[]> results = new ArrayList<>();
 
-        for(int row = 0; row < Rules.BOARD_SIZE; row++){
-            for(int col = 0; col < Rules.BOARD_SIZE; col++){
-                if(board[row][col] == null){
+        for(int row = 0; row < Rules.BOARD_SIZE; row++)
+        {
+            for(int col = 0; col < Rules.BOARD_SIZE; col++)
+            {
+                if(board[row][col] == null)
+                {
                     results.add(new int[]{row, col});
                 }
             }
@@ -318,34 +350,34 @@ public class GameController {
      *
      * @return true iff the rollback was executed
      */
-    public boolean undoMove(){
+    public boolean undoMove()
+    {
         if(undoCounter < 1) return false;
 
         //If there is an active game, undo the most recent move
         Cell[][] state = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
         Arrays.stream(board).flatMap(Arrays::stream).filter((cell) -> cell != null).forEach((cell) -> {
             boolean decompose = cell.rollBack();
-            if (!decompose) {
+            if (!decompose)
+            {
                 // The cell is at least two generations old, just move it
                 System.out.println(cell + " is at least two generations old, just moving");
                 state[cell.getBoardY()][cell.getBoardX()] = cell;
+            } else if (!cell.isOriginCell()) {
+                // Return Parents to game board and don't add the current cell back
+                Cell father = cell.getFather();
+                father.setMoveFrom(cell.getBoardX(), cell.getBoardY());
+
+                Cell mother = cell.getMother();
+                mother.setMoveFrom(cell.getBoardX(), cell.getBoardY());
+
+                System.out.println("Decomposing " + cell + " into " + father + " and " + mother);
+
+                state[father.getBoardY()][father.getBoardX()] = father;
+                state[mother.getBoardY()][mother.getBoardX()] = mother;
             } else {
-                if (!cell.isOriginCell()) {
-                    // Return Parents to game board and don't add the current cell back
-                    Cell father = cell.getFather();
-                    father.setMoveFrom(cell.getBoardX(), cell.getBoardY());
-
-                    Cell mother = cell.getMother();
-                    mother.setMoveFrom(cell.getBoardX(), cell.getBoardY());
-
-                    System.out.println("Decomposing " + cell + " into " + father + " and " + mother);
-
-                    state[father.getBoardY()][father.getBoardX()] = father;
-                    state[mother.getBoardY()][mother.getBoardX()] = mother;
-                }else{
-                    // The cell was just added. Remove it
-                    System.out.println(cell + " was just added, removing");
-                }
+                // The cell was just added. Remove it
+                System.out.println(cell + " was just added, removing");
             }
         });
 
@@ -365,26 +397,35 @@ public class GameController {
     /**
      * @return true iff the game board contains a cell with a value of at least 2048
      */
-    public boolean isGameWon(){
-        return Arrays.stream(board).flatMap(Arrays::stream).filter(c -> c != null && c.getCellValue() >= 2048).count() > 0;
+    public boolean isGameWon()
+    {
+        return Arrays.stream(board)
+                .flatMap(Arrays::stream)
+                .filter(c -> c != null && c.getCellValue() >= 2048)
+                .count() > 0;
     }
 
     /**
      * @return true if there are no more moves left to be made
      */
-    public boolean isLost(){
+    public boolean isLost()
+    {
 
         // North / South
-        for (int col = 0; col < Rules.BOARD_SIZE; col++){
-            for (int row = 0; row < Rules.BOARD_SIZE - 1; row++){
+        for (int col = 0; col < Rules.BOARD_SIZE; col++)
+        {
+            for (int row = 0; row < Rules.BOARD_SIZE - 1; row++)
+            {
                 if (canMergeCell(board[row][col], board[row + 1][col]))
                     return false;
             }
         }
 
         // East / West
-        for (int row = 0; row < Rules.BOARD_SIZE; row++){
-            for (int col = 0; col < Rules.BOARD_SIZE - 1; col++){
+        for (int row = 0; row < Rules.BOARD_SIZE; row++)
+        {
+            for (int col = 0; col < Rules.BOARD_SIZE - 1; col++)
+            {
                 if(canMergeCell(board[row][col], board[row][col + 1]))
                     return false;
             }
@@ -399,7 +440,8 @@ public class GameController {
      * @param right The second cell to check
      * @return true iff only one of the cells is null (the other can be moved) or the cells contain the same value
      */
-    private boolean canMergeCell(Cell left, Cell right){
+    private boolean canMergeCell(Cell left, Cell right)
+    {
         return
                 (left == null ^ right == null) ||
                 (left != null && right != null &&  left.getCellValue() == right.getCellValue());
@@ -413,8 +455,10 @@ public class GameController {
      * @param path the path to save to
      * @return true iff the game was able to be saved to the specified path
      */
-    public boolean saveGame(String path){
-        try(DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path)))){
+    public boolean saveGame(String path)
+    {
+        try(DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(path))))
+        {
             out.writeInt(SAVE_FILE_FORMAT_VERSION);
 
             statsManager.save(out);
@@ -423,14 +467,15 @@ public class GameController {
 
             Cell[] cells = Arrays.stream(board).flatMap(Arrays::stream).filter(c -> c != null).toArray(Cell[]::new);
             out.writeInt(cells.length);
-            for (Cell cell : cells) {
+            for (Cell cell : cells)
+            {
                 cell.storeCell(out);
             }
 
 
             lastGamePath = path;
             return true;
-        }catch(IOException ex){
+        } catch(IOException ex) {
             ex.printStackTrace();
             return false;
         }
@@ -444,11 +489,14 @@ public class GameController {
      * @param path the path to load the game from
      * @return true iff the game was able to be loaded
      */
-    public boolean startGameFromFile(String path){
-        try(DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(path)))){
+    public boolean startGameFromFile(String path)
+    {
+        try(DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(path))))
+        {
             int version = in.readInt();
 
-            if(version != SAVE_FILE_FORMAT_VERSION){
+            if(version != SAVE_FILE_FORMAT_VERSION)
+            {
                 System.err.println("The file at " + path + " uses an older save game version and cannot be opened at this time");
                 return false;
             }
@@ -459,20 +507,21 @@ public class GameController {
 
             int count = in.readInt();
             Cell[] cells = new Cell[count];
-            for(int i=0; i<count; i++){
+            for(int i=0; i<count; i++)
+            {
                 cells[i] = Cell.readCell(in);
             }
 
             Cell[][] b = new Cell[Rules.BOARD_SIZE][Rules.BOARD_SIZE];
-            for(Cell c : cells){
+            Arrays.stream(cells).forEach((c -> {
                 b[c.getBoardY()][c.getBoardX()] = c;
-            }
+            }));
 
             board = b;
             this.undoCounter = undoCounter;
 
             return true;
-        }catch(IOException ex){
+        } catch(IOException ex) {
             ex.printStackTrace();
             return false;
         }
@@ -481,9 +530,11 @@ public class GameController {
     /**
      * Saves the high score information between games
      */
-    public void saveHighScore(){
+    public void saveHighScore()
+    {
         System.out.println("Trying to save high score to " + HIGH_SCORE_FILE.getAbsolutePath());
-        try(DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(HIGH_SCORE_FILE)))){
+        try(DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(HIGH_SCORE_FILE))))
+        {
             out.writeInt(getStatsManager().getHighScore());
             out.writeUTF(lastGamePath);
 
@@ -493,21 +544,27 @@ public class GameController {
         }
     }
 
-    public String getLastGamePath(){
+    public String getLastGamePath()
+    {
         return lastGamePath;
     }
 
-    public void setLastGamePath(String p){
+    public void setLastGamePath(String p)
+    {
         lastGamePath = p == null || p.isEmpty() ? NO_PREVIOUS_GAME : p;
     }
 
-    public void onGameLost(SimpleListener listener){ gameLostListeners.add(listener); }
+    public void onGameLost(SimpleListener listener)
+    {
+        gameLostListeners.add(listener);
+    }
 
     /**
      * Add a listener to the 'gameWon' signal or event
      * @param listener
      */
-    public void onGameWon(SimpleListener listener){
+    public void onGameWon(SimpleListener listener)
+    {
         gameWonListeners.add(listener);
     }
 
@@ -515,7 +572,8 @@ public class GameController {
      * Add a listener to the 'moveComplete' signal or event
      * @param listener
      */
-    public void onMoveComplete(Consumer<MoveResult> listener){
+    public void onMoveComplete(Consumer<MoveResult> listener)
+    {
         moveCompleteListeners.add(listener);
     }
 
@@ -523,25 +581,29 @@ public class GameController {
      * Notifies all listeners that a move has been completed
      * @param move the move result from the move. May be null.
      */
-    private void doMoveComplete(MoveResult move){
+    private void doMoveComplete(MoveResult move)
+    {
         moveCompleteListeners.stream().forEach((l) -> l.accept(move));
     }
 
     /**
      * Notify all listeners that the game is won
      */
-    private void doGameWon(){
+    private void doGameWon()
+    {
         gameWonListeners.stream().forEach(SimpleListener::listen);
     }
 
     /**
      * Notify all listeners that the game is lost
      */
-    private void doGameLost(){
+    private void doGameLost()
+    {
         gameLostListeners.stream().forEach(SimpleListener::listen);
     }
 
-    public StatsManager getStatsManager(){
+    public StatsManager getStatsManager()
+    {
         return statsManager;
     }
 }

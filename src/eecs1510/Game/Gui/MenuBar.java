@@ -18,7 +18,8 @@ import javafx.scene.layout.Priority;
  *
  * A top menu bar, inspired by Gtk+'s HeaderBar
  */
-public class MenuBar extends ToolBar {
+public class MenuBar extends ToolBar
+{
 
     /**
      *
@@ -29,33 +30,39 @@ public class MenuBar extends ToolBar {
      * @param eventHandler  the event handler to assign to the button (if applicable)
      * @return a new <code>Button</code> with the specified properties
      */
-    private Button createButton(String resourcePath, String tooltip, EventHandler<ActionEvent> eventHandler){
+    private Button createButton(String resourcePath, String tooltip, EventHandler<ActionEvent> eventHandler)
+    {
         Button b = new Button("", new ImageView(new Image(MainWindow.class.getResourceAsStream(resourcePath))));
 
-        if(tooltip != null){
+        if(tooltip != null)
+        {
             Tooltip t = new Tooltip();
             t.setText(tooltip);
             b.setTooltip(t);
         }
 
-        if(eventHandler != null){
+        if(eventHandler != null)
+        {
             b.setOnAction(eventHandler);
         }
 
         return b;
     }
 
-    private SplitMenuButton createSplitButton(String resourcePath, String tooltip, EventHandler<ActionEvent> eventHandler, MenuItem...items){
+    private SplitMenuButton createSplitButton(String resourcePath, String tooltip, EventHandler<ActionEvent> eventHandler, MenuItem...items)
+    {
         SplitMenuButton b = new SplitMenuButton();
         b.setGraphic(new ImageView(new Image(MainWindow.class.getResourceAsStream(resourcePath))));
 
-        if(tooltip != null){
+        if(tooltip != null)
+        {
             Tooltip t = new Tooltip();
             t.setText(tooltip);
             b.setTooltip(t);
         }
 
-        if(eventHandler != null){
+        if(eventHandler != null)
+        {
             b.setOnAction(eventHandler);
         }
 
@@ -65,7 +72,8 @@ public class MenuBar extends ToolBar {
     }
 
 
-    public MenuBar(MainWindow controller){
+    public MenuBar(MainWindow controller)
+    {
         super();
 
         this.setPrefHeight(40);
@@ -113,7 +121,8 @@ public class MenuBar extends ToolBar {
         Button undo = createButton("res/icons/ic_undo_black_24dp.png", "Undo Last Move", (e) -> {
             // Attempt to undo the most recent move
             boolean undone = controller.getGameController().undoMove();
-            if(!undone){
+            if(!undone)
+            {
                 controller.getBoardRenderer().displayNotification("Can't undo move!", 2, NotificationType.ERROR, false);
             }
         });

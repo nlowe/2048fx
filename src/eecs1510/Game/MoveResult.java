@@ -30,7 +30,8 @@ public class MoveResult
     /**
      * @return a new MoveResult for a move that was undone
      */
-    public static MoveResult undo(){
+    public static MoveResult undo()
+    {
         MoveResult r = new MoveResult(0, 0);
         r.undoFlag = true;
         return r;
@@ -50,7 +51,8 @@ public class MoveResult
     /**
      * @return true iff this move result indicates a move was undone
      */
-    public boolean wasUndoFlagSet(){
+    public boolean wasUndoFlagSet()
+    {
         return undoFlag;
     }
 

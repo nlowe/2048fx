@@ -7,9 +7,11 @@ import javafx.scene.control.Label;
 /**
  * Created by nathan on 5/1/15
  */
-public class GameOverOverlay extends BoardOverlay {
+public class GameOverOverlay extends BoardOverlay
+{
 
-    public GameOverOverlay(MainWindow controller){
+    public GameOverOverlay(MainWindow controller)
+    {
         super(controller);
         getStyleClass().add("lost");
 
@@ -27,7 +29,8 @@ public class GameOverOverlay extends BoardOverlay {
         add(new Label("Total merged Cells:"), 0, 3);
         add(new Label(String.valueOf(controller.getGameController().getStatsManager().getTotalMerged())), 1, 3);
 
-        if(controller.getGameController().getStatsManager().wasNewHighScoreSet()){
+        if(controller.getGameController().getStatsManager().wasNewHighScoreSet())
+        {
             add(new Label("New High Score!"), 0, 4);
             add(new Label(String.valueOf(controller.getGameController().getStatsManager().getHighScore())), 1, 4);
         }

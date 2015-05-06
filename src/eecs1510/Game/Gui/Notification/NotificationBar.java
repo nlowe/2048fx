@@ -12,20 +12,24 @@ import javafx.scene.layout.Priority;
  *
  * A simple pop-over pane inspired by Gtk+'s InfoBar combined with the Revealer animation
  */
-public class NotificationBar extends GridPane{
+public class NotificationBar extends GridPane
+{
 
     /** The duration, in seconds, that this notification should be visible **/
     private final int duration;
     /** The type or priority of the notification*/
     private final NotificationType type;
 
-    public NotificationBar(String text){
+    public NotificationBar(String text)
+    {
         this(text, 15, NotificationType.INFO);
     }
 
-    public NotificationBar(String text, int duration, NotificationType priority){
+    public NotificationBar(String text, int duration, NotificationType priority)
+    {
         getStyleClass().add("notification");
-        switch(priority){
+        switch(priority)
+        {
             case WARNING: getStyleClass().add("warning"); break;
             case ERROR: getStyleClass().add("error"); break;
         }
@@ -49,11 +53,13 @@ public class NotificationBar extends GridPane{
         add(new Label(text), 0, 0);
     }
 
-    public int getDuration(){
+    public int getDuration()
+    {
         return duration;
     }
 
-    public NotificationType getType() {
+    public NotificationType getType()
+    {
         return type;
     }
 }

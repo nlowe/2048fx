@@ -5,7 +5,8 @@ package eecs1510.Game;
  *
  * Game constants
  */
-public class Rules {
+public class Rules
+{
     // --- Game Rules Constants ---
     /** The number of rows and columns in the game board */
     public static final int BOARD_SIZE = 4;

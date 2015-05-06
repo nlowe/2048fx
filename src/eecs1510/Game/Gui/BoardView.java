@@ -36,7 +36,8 @@ public class BoardView extends Pane{
     /** The currently displayed overlay */
     private BoardOverlay overlay = null;
 
-    public BoardView(MainWindow controller){
+    public BoardView(MainWindow controller)
+    {
         super();
 
         getStyleClass().add("board");
@@ -49,8 +50,10 @@ public class BoardView extends Pane{
         this.controller = controller;
 
         // Add the 'empty' background cells
-        for(int row = 0; row < Rules.BOARD_SIZE; row++){
-            for(int col=0; col < Rules.BOARD_SIZE; col++){
+        for(int row = 0; row < Rules.BOARD_SIZE; row++)
+        {
+            for(int col=0; col < Rules.BOARD_SIZE; col++)
+            {
                 Pane emptyCell = new Pane();
                 emptyCell.getStyleClass().add("empty-cell-view");
 
@@ -65,7 +68,8 @@ public class BoardView extends Pane{
 
         // Events
         setOnKeyReleased(e -> {
-            if (controller.getKeyManager().handleKey(e)) {
+            if (controller.getKeyManager().handleKey(e))
+            {
                 e.consume();
             }
         });
@@ -76,7 +80,8 @@ public class BoardView extends Pane{
 
         // Update the view after every move
         controller.getGameController().onMoveComplete((moveResult) -> {
-            if (moveResult != null && moveResult.isInvalid()) {
+            if (moveResult != null && moveResult.isInvalid())
+            {
                 displayNotification("Invalid Move!", 3, NotificationType.WARNING, true);
             } else {
                 updateView(moveResult);
@@ -115,7 +120,8 @@ public class BoardView extends Pane{
             fade.setToValue(1.0);
             fade.setCycleCount(1);
 
-            if (controller.getGameController().getStatsManager().wasNewHighScoreSet()) {
+            if (controller.getGameController().getStatsManager().wasNewHighScoreSet())
+            {
                 fade.setOnFinished((e) -> {
                     playTaDa();
                 });
@@ -135,14 +141,16 @@ public class BoardView extends Pane{
      *
      * @param moveResult the result of the move, or null to force a re-draw
      */
-    protected void updateView(MoveResult moveResult) {
+    protected void updateView(MoveResult moveResult)
+    {
         if(moveResult != null && moveResult.isInvalid()) return; //No need to update for invalid moves
 
         GameController game = controller.getGameController();
 
         // If this is a new game or a move was undone, we can remove the overlay
         boolean undo = moveResult != null && moveResult.wasUndoFlagSet();
-        if(game.getStatsManager().isNewGame() || undo){
+        if(game.getStatsManager().isNewGame() || undo)
+        {
             getChildren().remove(overlay);
         }
 
@@ -151,8 +159,10 @@ public class BoardView extends Pane{
         cellViews.clear();
 
         // Add CellViews
-        for(int row = 0; row < Rules.BOARD_SIZE; row++){
-            for(int col=0; col < Rules.BOARD_SIZE; col++){
+        for(int row = 0; row < Rules.BOARD_SIZE; row++)
+        {
+            for(int col=0; col < Rules.BOARD_SIZE; col++)
+            {
                 Cell c = game.cellAt(row, col);
                 if(c == null) continue;
 
@@ -167,7 +177,8 @@ public class BoardView extends Pane{
                 cellViews.add(view);
                 getChildren().add(view);
 
-                if((game.getStatsManager().isNewGame() && moveResult == null) || (c.isOriginCell() && c.getAge() == 0)){
+                if((game.getStatsManager().isNewGame() && moveResult == null) || (c.isOriginCell() && c.getAge() == 0))
+                {
                     //Newly Created Cell that was spawned randomly
                     ScaleTransition scale = new ScaleTransition();
                     scale.setDuration(Duration.millis(150));
@@ -180,7 +191,8 @@ public class BoardView extends Pane{
                     scale.setToY(1.0);
 
                     scale.play();
-                }else if(!undo && !c.isOriginCell() && c.getAge() == 1){
+                } else if(!undo && !c.isOriginCell() && c.getAge() == 1)
+                {
                     //Newly Merged Cell (Ignores undo)
 
                     CellView fatherView = new CellView(c.getFather());
@@ -238,7 +250,7 @@ public class BoardView extends Pane{
                     });
 
                     move.play();
-                }else{
+                } else {
                     // Regular movement
 
                     view.setLayoutX(prev.getX());
@@ -256,7 +268,8 @@ public class BoardView extends Pane{
             }
         }
 
-        if(notification != null){
+        if(notification != null)
+        {
             notification.toFront();
         }
 
@@ -270,7 +283,8 @@ public class BoardView extends Pane{
      * @param y the y component or row
      * @return
      */
-    public Point2D boardToScene(int x, int y){
+    public Point2D boardToScene(int x, int y)
+    {
         return new Point2D((x * 132) + (x*18) + 18, (y * 132) + (y*18) + 18);
     }
 
@@ -282,11 +296,14 @@ public class BoardView extends Pane{
      * @param priority  the priority (INFO, WARNING, or ERROR)
      * @param overrideExisting
      */
-    public void displayNotification(String text, int duration, NotificationType priority, boolean overrideExisting){
-        if(overrideExisting){
+    public void displayNotification(String text, int duration, NotificationType priority, boolean overrideExisting)
+    {
+        if(overrideExisting)
+        {
             notifications.clear();
 
-            if(notification != null){
+            if(notification != null)
+            {
                 notificationTransition.stop();
                 getChildren().remove(notification);
                 notification = null;
@@ -300,8 +317,10 @@ public class BoardView extends Pane{
     /**
      * Plays the next notification if ther isn't one already or the current one has finished
      */
-    private void updateDisplayedNotifications(){
-        if(notificationTransition == null || notificationTransition.getStatus().equals(Animation.Status.STOPPED) && notifications.size() > 0){
+    private void updateDisplayedNotifications()
+    {
+        if(notificationTransition == null || notificationTransition.getStatus().equals(Animation.Status.STOPPED) && notifications.size() > 0)
+        {
             // Add the NotificationBar to the scene and position it above the board
             notification = notifications.pop();
             getChildren().add(notification);
@@ -338,7 +357,8 @@ public class BoardView extends Pane{
         }
     }
 
-    public void showGameOverOverlay() {
+    public void showGameOverOverlay()
+    {
         overlay = new GameOverOverlay(controller);
         overlay.setOpacity(0.0);
         overlay.requestFocus();
@@ -351,7 +371,8 @@ public class BoardView extends Pane{
         fade.setToValue(1.0);
         fade.setCycleCount(1);
 
-        if(controller.getGameController().getStatsManager().wasNewHighScoreSet()){
+        if(controller.getGameController().getStatsManager().wasNewHighScoreSet())
+        {
             fade.setOnFinished((e) -> {
                 playTaDa();
             });
@@ -368,7 +389,8 @@ public class BoardView extends Pane{
         controller.getKeyManager().setIgnoreEvents(true);
     }
 
-    private void playTaDa(){
+    private void playTaDa()
+    {
         new AudioClip(MainWindow.class.getResource("res/TADA.WAV").toString()).play(1.0);
     }
 }

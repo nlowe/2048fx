@@ -10,9 +10,11 @@ import javafx.scene.layout.GridPane;
  *
  * A simple overlay for Winning or Game Over notifications
  */
-public class BoardOverlay extends GridPane{
+public class BoardOverlay extends GridPane
+{
 
-    public BoardOverlay(MainWindow controller){
+    public BoardOverlay(MainWindow controller)
+    {
         getStyleClass().add("overlay");
 
         setMinSize(controller.getBoardRenderer().getWidth(), controller.getBoardRenderer().getHeight());

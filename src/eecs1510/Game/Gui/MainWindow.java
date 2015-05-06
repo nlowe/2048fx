@@ -16,7 +16,8 @@ import java.io.File;
  *
  * The main class and application for 2048fx
  */
-public class MainWindow extends Application {
+public class MainWindow extends Application
+{
 
     /** The Game Controller: Responsible for the actual game logic */
     private GameController controller;
@@ -30,12 +31,14 @@ public class MainWindow extends Application {
     /** The file that the game was most recently saved to or loaded from */
     private File saveGameFile = null;
 
-    public static void main(String[] args){
+    public static void main(String[] args)
+    {
         Application.launch(args);
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) throws Exception
+    {
         this.primaryStage = primaryStage;
 
         // Setup the controllers
@@ -69,7 +72,8 @@ public class MainWindow extends Application {
             shutdownGame();
         });
 
-        if(saveGameFile.exists()){
+        if(saveGameFile.exists())
+        {
             tryStartSavedGame(true);
         }
 
@@ -80,7 +84,8 @@ public class MainWindow extends Application {
         primaryStage.show();
     }
 
-    public void shutdownGame(){
+    public void shutdownGame()
+    {
         controller.saveHighScore();
         Platform.exit();
     }
@@ -88,9 +93,11 @@ public class MainWindow extends Application {
     /**
      * Tries to load a saved game from the file '2048.dat' in the current directory
      */
-    public void tryStartSavedGame(boolean usePreviousGame){
+    public void tryStartSavedGame(boolean usePreviousGame)
+    {
         File f = saveGameFile;
-        if(!usePreviousGame || saveGameFile == null || !saveGameFile.exists()){
+        if(!usePreviousGame || saveGameFile == null || !saveGameFile.exists())
+        {
             FileChooser dialog = new FileChooser();
             dialog.setInitialDirectory(new File(System.getProperty("user.home")));
             dialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("2048 Files", "*.dat"));
@@ -99,10 +106,11 @@ public class MainWindow extends Application {
         }
 
         boolean result = controller.startGameFromFile(f.getPath());
-        if(!result){
+        if(!result)
+        {
             board.displayNotification("Error Loading Game", 1, NotificationType.ERROR, false);
             saveGameFile = null;
-        }else{
+        } else {
             saveGameFile = f;
             board.updateView(null);
         }
@@ -111,8 +119,10 @@ public class MainWindow extends Application {
     /**
      * Tries to save the current game to the file '2048.dat' in the current directory
      */
-    public void trySaveGame(boolean forceSaveAs){
-        if(forceSaveAs || saveGameFile == null || !saveGameFile.exists()){
+    public void trySaveGame(boolean forceSaveAs)
+    {
+        if(forceSaveAs || saveGameFile == null || !saveGameFile.exists())
+        {
             FileChooser dialog = new FileChooser();
             dialog.setInitialDirectory(new File(System.getProperty("user.home")));
             dialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("2048 Files", "*.dat"));
@@ -120,42 +130,50 @@ public class MainWindow extends Application {
 
             File f = dialog.showSaveDialog(primaryStage);
 
-            if(f != null){
+            if(f != null)
+            {
                 saveGameFile = f;
-            }else{
+            } else {
                 return;
             }
         }
 
-        if(!saveGameFile.getName().toLowerCase().endsWith(".dat")){
+        if(!saveGameFile.getName().toLowerCase().endsWith(".dat"))
+        {
             saveGameFile = new File(saveGameFile.getPath() + ".dat");
         }
 
         boolean result = controller.saveGame(saveGameFile.getPath());
-        if(result){
+        if(result)
+        {
             board.displayNotification("Game Saved", 1, NotificationType.INFO, false);
-        }else{
+        } else {
             board.displayNotification("Error Saving Game", 1, NotificationType.ERROR, false);
         }
     }
 
-    public GameController getGameController() {
+    public GameController getGameController()
+    {
         return controller;
     }
 
-    public BoardView getBoardRenderer() {
+    public BoardView getBoardRenderer()
+    {
         return board;
     }
 
-    public KeyManager getKeyManager() {
+    public KeyManager getKeyManager()
+    {
         return keyManager;
     }
 
-    public Stage getPrimaryStage() {
+    public Stage getPrimaryStage()
+    {
         return primaryStage;
     }
 
-    public void showHelpDialog(){
+    public void showHelpDialog()
+    {
         new HelpDialog(this).show();
     }
 }

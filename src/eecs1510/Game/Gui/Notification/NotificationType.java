@@ -6,7 +6,8 @@ package eecs1510.Game.Gui.Notification;
  * Represents the different type of notifications. See <code>theme.css</code>
  * for color details
  */
-public enum NotificationType {
+public enum NotificationType
+{
     INFO,
     WARNING,
     ERROR

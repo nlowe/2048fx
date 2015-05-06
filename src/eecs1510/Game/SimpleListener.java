@@ -6,6 +6,7 @@ package eecs1510.Game;
  * A simple listener for events that take no arguments and return void
  */
 @FunctionalInterface
-public interface SimpleListener {
+public interface SimpleListener
+{
     void listen();
 }
