@@ -88,6 +88,9 @@ public class MainWindow extends Application
         primaryStage.setScene(gameScene);
         primaryStage.setTitle("2048fx");
         primaryStage.show();
+
+        // Fix animations stopping early if an animation is started before the stage is shown
+        Platform.runLater(() -> board.updateView(null));
     }
 
     /**
@@ -169,6 +172,13 @@ public class MainWindow extends Application
         } else {
             board.displayNotification("Error Saving Game", 1, NotificationType.ERROR, false);
         }
+    }
+
+    /**
+     * Resets the previously saved game path
+     */
+    public void resetLastSavedGamePath(){
+        saveGameFile = null;
     }
 
     /**

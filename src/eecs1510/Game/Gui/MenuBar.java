@@ -102,8 +102,8 @@ public class MenuBar extends ToolBar
         }, saveAs);
 
         Button newGame  = createButton("res/icons/ic_add_box_black_24dp.png", "New Game", (e) -> {
-            //FIXME: Prompt to save
             // Start a new game and update the Board View
+            controller.resetLastSavedGamePath();
             controller.getGameController().startNewGame();
             controller.getBoardRenderer().updateView(null);
         });
@@ -133,7 +133,7 @@ public class MenuBar extends ToolBar
             boolean undone = controller.getGameController().undoMove();
             if(!undone)
             {
-                controller.getBoardRenderer().displayNotification("Can't undo move!", 2, NotificationType.ERROR, false);
+                controller.getBoardRenderer().displayNotification("Can't undo move!", 2, NotificationType.ERROR, true);
             }
         });
 
