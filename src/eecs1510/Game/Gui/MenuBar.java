@@ -1,6 +1,7 @@
 package eecs1510.Game.Gui;
 
 import eecs1510.Game.Gui.Notification.NotificationType;
+
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -49,6 +50,15 @@ public class MenuBar extends ToolBar
         return b;
     }
 
+    /**
+     * A convenience method to create a split button with the specified image, tooltip, event handler, and menu items
+     *
+     * @param resourcePath  the path to the icon to use for the button
+     * @param tooltip       the tooltip text (if applicable)
+     * @param eventHandler  the event handler to assign to the button (if applicable)
+     * @param items         the menu items to add to the button
+     * @return a new <code>SplitMenuButton</code> with the specified properties
+     */
     private SplitMenuButton createSplitButton(String resourcePath, String tooltip, EventHandler<ActionEvent> eventHandler, MenuItem...items)
     {
         SplitMenuButton b = new SplitMenuButton();

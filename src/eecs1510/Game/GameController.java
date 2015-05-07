@@ -62,6 +62,7 @@ public class GameController
             e.printStackTrace();
         }
 
+        // Setup the Stats Manager and update on every move
         statsManager = new StatsManager(w, lastHighScore);
         onMoveComplete(statsManager::applyMove);
 

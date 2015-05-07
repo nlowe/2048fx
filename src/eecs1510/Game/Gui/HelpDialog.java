@@ -25,13 +25,13 @@ import java.io.StringWriter;
  *
  * A separate stage containing help and license information for 2048fx
  *
- * TODO: This needs theme'd
  */
 public class HelpDialog extends Stage
 {
 
     public HelpDialog(MainWindow controller)
     {
+        // This dialog is a modal utility stage
         initOwner(controller.getPrimaryStage());
         initModality(Modality.APPLICATION_MODAL);
         initStyle(StageStyle.UTILITY);
@@ -41,6 +41,7 @@ public class HelpDialog extends Stage
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setVgap(10);
 
+        // Center and grow all the things
         ColumnConstraints center = new ColumnConstraints();
         center.setHalignment(HPos.CENTER);
         center.setFillWidth(true);

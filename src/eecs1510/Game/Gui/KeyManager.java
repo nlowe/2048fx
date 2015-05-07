@@ -1,6 +1,7 @@
 package eecs1510.Game.Gui;
 
 import eecs1510.Game.Direction;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.input.KeyCode;
@@ -14,8 +15,9 @@ import javafx.scene.input.KeyEvent;
 public class KeyManager
 {
 
+    /** The main controller for the application */
     private final MainWindow controller;
-
+    /** A flag used to determine whether or not the KeyManager should ignore events */
     private final BooleanProperty ignoreEvents = new SimpleBooleanProperty(false);
 
     public KeyManager(MainWindow controller)
@@ -61,6 +63,9 @@ public class KeyManager
         }
     }
 
+    /**
+     * @return true iff events are being ignored
+     */
     public boolean getIgnoreEvents()
     {
         return ignoreEvents.get();
@@ -71,6 +76,12 @@ public class KeyManager
         return ignoreEvents;
     }
 
+    /**
+     * Sets the ignore flag on the KeyManager. When set to true, the KeyManager will
+     * ignore all key strokes until the flag is unset
+     *
+     * @param b
+     */
     public void setIgnoreEvents(boolean b)
     {
         ignoreEvents.setValue(b);

@@ -2,6 +2,7 @@ package eecs1510.Game.Gui;
 
 import eecs1510.Game.*;
 import eecs1510.Game.Gui.Notification.*;
+
 import javafx.animation.*;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
@@ -11,13 +12,14 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+
 import java.util.ArrayList;
 import java.util.Stack;
 
 /**
  * Created by nathan on 4/11/15
  *
- * A view representing the game board, updated each turn
+ * A view representing the game board, Updated each turn to reflect the
  */
 public class BoardView extends Pane{
 
@@ -66,7 +68,7 @@ public class BoardView extends Pane{
             }
         }
 
-        // Events
+        // Events: Consume the event if it's handled by us
         setOnKeyReleased(e -> {
             if (controller.getKeyManager().handleKey(e))
             {
@@ -88,9 +90,7 @@ public class BoardView extends Pane{
             updateView(moveResult);
         });
 
-        controller.getGameController().onGameLost(() -> {
-            showGameOverOverlay();
-        });
+        controller.getGameController().onGameLost(this::showGameOverOverlay);
 
         controller.getGameController().onGameWon(() -> {
             overlay = new GameWonOverlay(controller);
@@ -115,6 +115,7 @@ public class BoardView extends Pane{
                 controller.getKeyManager().setIgnoreEvents(false);
             });
 
+            // Fade In the overlay
             FadeTransition fade = new FadeTransition(Duration.millis(250), overlay);
             fade.setFromValue(0.0);
             fade.setToValue(1.0);
@@ -127,6 +128,7 @@ public class BoardView extends Pane{
                 });
             }
 
+            // Ignore events while an overlay is present
             controller.getKeyManager().setIgnoreEvents(true);
             fade.play();
         });
@@ -177,6 +179,7 @@ public class BoardView extends Pane{
 
                 if(moveResult != null && moveResult.isInvalid())
                 {
+                    // Invalid Move
                     RotateTransition rl = new RotateTransition(Duration.millis(40), view);
                     rl.setFromAngle(0);
                     rl.setToAngle(-15);
@@ -235,6 +238,7 @@ public class BoardView extends Pane{
                     Timeline move = new Timeline();
                     move.setCycleCount(1);
 
+                    // Move parents into place
                     move.getKeyFrames().addAll(
                             new KeyFrame(Duration.millis(150), new KeyValue(fatherView.layoutXProperty(), next.getX(), Interpolator.LINEAR)),
                             new KeyFrame(Duration.millis(150), new KeyValue(fatherView.layoutYProperty(), next.getY(), Interpolator.LINEAR)),
@@ -279,11 +283,13 @@ public class BoardView extends Pane{
                             new KeyFrame(Duration.millis(150), new KeyValue(view.layoutXProperty(), next.getX(), Interpolator.LINEAR)),
                             new KeyFrame(Duration.millis(150), new KeyValue(view.layoutYProperty(), next.getY(), Interpolator.LINEAR))
                     );
+
                     move.play();
                 }
             }
         }
 
+        // If there is a notification being displayed, fix the z-order
         if(notification != null)
         {
             notification.toFront();
@@ -307,7 +313,8 @@ public class BoardView extends Pane{
     /**
      * Queue's up a notification to be displayed. If there is no other notifications in the queue,
      * the notification will be displayed immediately
-     *  @param text  the Text of the notification
+     *
+     * @param text  the Text of the notification
      * @param duration  the duration in seconds
      * @param priority  the priority (INFO, WARNING, or ERROR)
      * @param overrideExisting
@@ -335,6 +342,7 @@ public class BoardView extends Pane{
      */
     private void updateDisplayedNotifications()
     {
+        // If no other notifications are being displayed and there is at least one notification in the stack, display it
         if(notificationTransition == null || notificationTransition.getStatus().equals(Animation.Status.STOPPED) && notifications.size() > 0)
         {
             // Add the NotificationBar to the scene and position it above the board
@@ -346,7 +354,6 @@ public class BoardView extends Pane{
             Point2D tl = this.localToScene(Point2D.ZERO);
 
             // PathTransitions animate on the center of an object
-
             PathTransition in = new PathTransition();
             in.setPath(new Path(new MoveTo(618/2, -100), new LineTo(618/2, tl.getY()+100)));
             in.setNode(notification);
@@ -373,6 +380,12 @@ public class BoardView extends Pane{
         }
     }
 
+    /**
+     * Shows the 'Game Over' screen over top of the game board. Internal Key Events are ignored while
+     * the overlay is active.
+     *
+     * As per the project specification, the program exits after 5 seconds of calling this method
+     */
     public void showGameOverOverlay()
     {
         overlay = new GameOverOverlay(controller);
@@ -396,7 +409,7 @@ public class BoardView extends Pane{
 
         PauseTransition delay = new PauseTransition(Duration.seconds(5));
         delay.setOnFinished((e) -> {
-            // Exit after 2 seconds as per assignment specification
+            // Exit after 5 seconds as per assignment specification
             controller.shutdownGame();
         });
         delay.setCycleCount(1);
@@ -405,6 +418,9 @@ public class BoardView extends Pane{
         controller.getKeyManager().setIgnoreEvents(true);
     }
 
+    /**
+     * Plays the 'TaDa' sound from windows
+     */
     private void playTaDa()
     {
         new AudioClip(MainWindow.class.getResource("res/TADA.WAV").toString()).play(1.0);

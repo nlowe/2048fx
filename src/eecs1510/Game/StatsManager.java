@@ -2,6 +2,7 @@ package eecs1510.Game;
 
 import eecs1510.Game.Gui.MainWindow;
 import eecs1510.Game.Gui.Notification.NotificationType;
+
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -88,46 +89,6 @@ public class StatsManager
     {
         scoreProperty.set(score.count() > 0 ? score.peek() : 0);
         totalMergedProperty.set(totalMerged.count() > 0 ? totalMerged.peek() : 0);
-    }
-
-    public int getScore()
-    {
-        return scoreProperty.get();
-    }
-
-    public ReadOnlyIntegerProperty scorePropertyProperty()
-    {
-        return scoreProperty.getReadOnlyProperty();
-    }
-
-    public int getTurnCount()
-    {
-        return turnCount.get();
-    }
-
-    public ReadOnlyIntegerProperty turnCountProperty()
-    {
-        return turnCount.getReadOnlyProperty();
-    }
-
-    public int getTotalMerged()
-    {
-        return totalMergedProperty.get();
-    }
-
-    public ReadOnlyIntegerProperty totalMergedPropertyProperty()
-    {
-        return totalMergedProperty.getReadOnlyProperty();
-    }
-
-    public int getHighScore()
-    {
-        return highScoreProperty.get();
-    }
-
-    public ReadOnlyIntegerProperty highScorePropertyProperty()
-    {
-        return highScoreProperty.getReadOnlyProperty();
     }
 
     /**
@@ -235,6 +196,46 @@ public class StatsManager
     public ReadOnlyBooleanProperty newGameProperty()
     {
         return newGame.getReadOnlyProperty();
+    }
+
+    public int getScore()
+    {
+        return scoreProperty.get();
+    }
+
+    public ReadOnlyIntegerProperty scorePropertyProperty()
+    {
+        return scoreProperty.getReadOnlyProperty();
+    }
+
+    public int getTurnCount()
+    {
+        return turnCount.get();
+    }
+
+    public ReadOnlyIntegerProperty turnCountProperty()
+    {
+        return turnCount.getReadOnlyProperty();
+    }
+
+    public int getTotalMerged()
+    {
+        return totalMergedProperty.get();
+    }
+
+    public ReadOnlyIntegerProperty totalMergedPropertyProperty()
+    {
+        return totalMergedProperty.getReadOnlyProperty();
+    }
+
+    public int getHighScore()
+    {
+        return highScoreProperty.get();
+    }
+
+    public ReadOnlyIntegerProperty highScorePropertyProperty()
+    {
+        return highScoreProperty.getReadOnlyProperty();
     }
 
     @Override

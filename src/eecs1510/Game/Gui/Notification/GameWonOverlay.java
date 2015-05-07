@@ -1,7 +1,7 @@
 package eecs1510.Game.Gui.Notification;
 
 import eecs1510.Game.Gui.MainWindow;
-import javafx.application.Platform;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -11,10 +11,14 @@ import javafx.scene.layout.Priority;
 
 /**
  * Created by nathan on 5/1/15
+ *
+ * An overlay for when the game is won. Optionally, an event handler can be added to listen for
+ * the 'Keep Playing' event, indicating that the user wants to continue the game
  */
 public class GameWonOverlay extends BoardOverlay
 {
 
+    /** The handler to be called when the 'Keep Playing' button is clicked */
     private EventHandler<ActionEvent> keepPlayingHandler = null;
 
     public GameWonOverlay(MainWindow controller)
@@ -68,6 +72,10 @@ public class GameWonOverlay extends BoardOverlay
         setHgrow(quit, Priority.ALWAYS);
     }
 
+    /**
+     * Sets the event handler for when the 'Keep Playing' button is clicked
+     * @param handler
+     */
     public void setOnContinue(EventHandler<ActionEvent> handler)
     {
         keepPlayingHandler = handler;

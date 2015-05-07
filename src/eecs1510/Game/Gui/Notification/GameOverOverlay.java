@@ -1,11 +1,14 @@
 package eecs1510.Game.Gui.Notification;
 
 import eecs1510.Game.Gui.MainWindow;
+
 import javafx.geometry.HPos;
 import javafx.scene.control.Label;
 
 /**
  * Created by nathan on 5/1/15
+ *
+ * An overlay for when the game is lost or the user exits the game
  */
 public class GameOverOverlay extends BoardOverlay
 {

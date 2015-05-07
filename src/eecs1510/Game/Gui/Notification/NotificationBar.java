@@ -53,11 +53,17 @@ public class NotificationBar extends GridPane
         add(new Label(text), 0, 0);
     }
 
+    /**
+     * @return The duration, in secopnds, that the notification remains stationary on the screen
+     */
     public int getDuration()
     {
         return duration;
     }
 
+    /**
+     * @return the type or priority of the notification
+     */
     public NotificationType getType()
     {
         return type;

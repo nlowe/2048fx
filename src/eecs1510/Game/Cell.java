@@ -207,6 +207,26 @@ public class Cell
         System.out.println("Wrote " + this);
     }
 
+    /**
+     * Whether or not this cell is an 'origin' cell
+     *
+     * Origin cells are those without parents (in other words, randomly placed at the end of a turn)
+     *
+     * @return true iff this cell has no parents
+     */
+    public boolean isOriginCell()
+    {
+        return father == null && mother == null;
+    }
+
+    /**
+     * Increments the age of this cell by one
+     */
+    public void survive()
+    {
+        age++;
+    }
+
     public Cell getFather()
     {
         return father;
@@ -256,23 +276,6 @@ public class Cell
     public int getAge()
     {
         return age;
-    }
-
-    public void survive()
-    {
-        age++;
-    }
-
-    /**
-     * Whether or not this cell is an 'origin' cell
-     *
-     * Origin cells are those without parents (in other words, randomly placed at the end of a turn)
-     *
-     * @return true iff this cell has no parents
-     */
-    public boolean isOriginCell()
-    {
-        return father == null && mother == null;
     }
 
     public int getLastBoardX()

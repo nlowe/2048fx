@@ -2,12 +2,14 @@ package eecs1510.Game.Gui;
 
 import eecs1510.Game.GameController;
 import eecs1510.Game.Gui.Notification.NotificationType;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.File;
 
@@ -39,6 +41,7 @@ public class MainWindow extends Application
     @Override
     public void start(Stage primaryStage) throws Exception
     {
+        // Cache the primary stage for modal dialogs
         this.primaryStage = primaryStage;
 
         // Setup the controllers
@@ -46,6 +49,8 @@ public class MainWindow extends Application
         keyManager = new KeyManager(this);
 
         saveGameFile = new File(controller.getLastGamePath());
+
+        // Reset the ignore flag for new games
         controller.onMoveComplete((move) -> {
             if(controller.getStatsManager().isNewGame()){
                 keyManager.setIgnoreEvents(false);
@@ -61,7 +66,7 @@ public class MainWindow extends Application
         root.setCenter(board);
 
         // Create the scene at the needed size
-        // TODO: Figure out why this fudge factor of 6 is needed for the height
+        // TODO: Figure out why this fudge factor of 6 is needed for the height on linux
         Scene gameScene = new Scene(root, 618, menu.getPrefHeight()+618+6);
 
         // Setup the theme
@@ -72,6 +77,7 @@ public class MainWindow extends Application
             shutdownGame();
         });
 
+        // Try to resume the most recently saved game
         if(saveGameFile.exists())
         {
             tryStartSavedGame(true);
@@ -84,6 +90,10 @@ public class MainWindow extends Application
         primaryStage.show();
     }
 
+    /**
+     * Gracefully shuts down the game, saving the high score and most recently saved game path
+     * to disk
+     */
     public void shutdownGame()
     {
         controller.saveHighScore();
@@ -98,13 +108,17 @@ public class MainWindow extends Application
         File f = saveGameFile;
         if(!usePreviousGame || saveGameFile == null || !saveGameFile.exists())
         {
+            // We don't yet have a file to load, have the user pick one
             FileChooser dialog = new FileChooser();
             dialog.setInitialDirectory(new File(System.getProperty("user.home")));
             dialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("2048 Files", "*.dat"));
             f = dialog.showOpenDialog(primaryStage);
+
+            // If the user cancelled the dialog, we can't load the game
             if(f == null) return;
         }
 
+        // Try to load a game from the specified file
         boolean result = controller.startGameFromFile(f.getPath());
         if(!result)
         {
@@ -123,6 +137,8 @@ public class MainWindow extends Application
     {
         if(forceSaveAs || saveGameFile == null || !saveGameFile.exists())
         {
+            // If we don't have a file to save to, have the user pick one
+
             FileChooser dialog = new FileChooser();
             dialog.setInitialDirectory(new File(System.getProperty("user.home")));
             dialog.getExtensionFilters().add(new FileChooser.ExtensionFilter("2048 Files", "*.dat"));
@@ -130,6 +146,7 @@ public class MainWindow extends Application
 
             File f = dialog.showSaveDialog(primaryStage);
 
+            // If the user picked a file, update the path to save the game to, otherwise abort
             if(f != null)
             {
                 saveGameFile = f;
@@ -138,11 +155,13 @@ public class MainWindow extends Application
             }
         }
 
+        // If the file is missing the '.dat' extension, add it
         if(!saveGameFile.getName().toLowerCase().endsWith(".dat"))
         {
             saveGameFile = new File(saveGameFile.getPath() + ".dat");
         }
 
+        // Attempt to save the game
         boolean result = controller.saveGame(saveGameFile.getPath());
         if(result)
         {
@@ -150,6 +169,14 @@ public class MainWindow extends Application
         } else {
             board.displayNotification("Error Saving Game", 1, NotificationType.ERROR, false);
         }
+    }
+
+    /**
+     * Displays a modal help dialog for the game
+     */
+    public void showHelpDialog()
+    {
+        new HelpDialog(this).show();
     }
 
     public GameController getGameController()
@@ -172,8 +199,4 @@ public class MainWindow extends Application
         return primaryStage;
     }
 
-    public void showHelpDialog()
-    {
-        new HelpDialog(this).show();
-    }
 }

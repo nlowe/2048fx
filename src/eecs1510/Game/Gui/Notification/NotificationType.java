@@ -8,7 +8,10 @@ package eecs1510.Game.Gui.Notification;
  */
 public enum NotificationType
 {
+    /** A standard notification with a blue background. For information */
     INFO,
+    /** A notification with a yellow background, For warnings */
     WARNING,
+    /** A notification with a red background, For errors or exceptions*/
     ERROR
 }

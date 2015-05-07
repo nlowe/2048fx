@@ -1,8 +1,9 @@
 package eecs1510.Game.Gui;
 
 import eecs1510.Game.Cell;
+
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
 /**
@@ -10,7 +11,7 @@ import javafx.scene.text.Text;
  *
  * A view for individual 132px x 132px cells
  */
-public class CellView extends Pane
+public class CellView extends StackPane
 {
 
     /**
@@ -50,7 +51,10 @@ public class CellView extends Pane
         getStyleClass().add("cell-view");
 
         // If the cell's value is between 256 and 2048 there's a slight glow around the border
-        if(model.getCellValue() >= 256 && model.getCellValue() <= 2048) getStyleClass().add("glow");
+        if(model.getCellValue() >= 256 && model.getCellValue() <= 2048)
+        {
+            getStyleClass().add("glow");
+        }
 
         String labelText = String.valueOf(model.getCellValue());
 
@@ -67,11 +71,10 @@ public class CellView extends Pane
         label.setScaleX(scaleFactor);
         label.setScaleY(scaleFactor);
 
-        if(model.getCellValue() <= 4) label.getStyleClass().add("dark-text");
-
-        label.setX(132.0 / 2.0 - label.getLayoutBounds().getWidth() / 2.0);
-        //TODO: Where did this fudge factor of 15 come from?
-        label.setY(132.0 / 2.0 - label.getLayoutBounds().getHeight() / 2.0 + 15);
+        if(model.getCellValue() <= 4)
+        {
+            label.getStyleClass().add("dark-text");
+        }
 
         // Set the background color of the cell
         int colorIndex = (int)(Math.log(model.getCellValue()) / Math.log(2));

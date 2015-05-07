@@ -1,6 +1,7 @@
 package eecs1510.Game.Gui.Notification;
 
 import eecs1510.Game.Gui.MainWindow;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
@@ -8,9 +9,9 @@ import javafx.scene.layout.GridPane;
 /**
  * Created by nathan on 5/1/15
  *
- * A simple overlay for Winning or Game Over notifications
+ * A simple overlay for Winning or Game Over notifications that fades in over top of the game board
  */
-public class BoardOverlay extends GridPane
+public abstract class BoardOverlay extends GridPane
 {
 
     public BoardOverlay(MainWindow controller)
