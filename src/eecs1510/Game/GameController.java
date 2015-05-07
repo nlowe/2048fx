@@ -19,7 +19,7 @@ public class GameController
     /** The identifier used to indicate that no previous game was saved */
     public static final String NO_PREVIOUS_GAME = "!NO_PREVIOUS_GAME!";
     /** The default location for the high score file */
-    public static final File HIGH_SCORE_FILE = new File(System.getenv("user.home"), "HighScore.dat");
+    public static final File HIGH_SCORE_FILE = new File(System.getProperty("user.home"), "HighScore.dat");
     /** The version of the save game format */
     public static final int SAVE_FILE_FORMAT_VERSION = 2;
 
