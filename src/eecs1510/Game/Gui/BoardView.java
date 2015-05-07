@@ -200,7 +200,7 @@ public class BoardView extends Pane{
                 } else if((game.getStatsManager().isNewGame() && moveResult == null) || (c.isOriginCell() && c.getAge() == 0)) {
                     //Newly Created Cell that was spawned randomly
                     ScaleTransition scale = new ScaleTransition();
-                    scale.setDuration(Duration.millis(150));
+                    scale.setDuration(Duration.millis(70));
                     scale.setNode(view);
 
                     scale.setFromX(0.0);
@@ -240,10 +240,10 @@ public class BoardView extends Pane{
 
                     // Move parents into place
                     move.getKeyFrames().addAll(
-                            new KeyFrame(Duration.millis(150), new KeyValue(fatherView.layoutXProperty(), next.getX(), Interpolator.LINEAR)),
-                            new KeyFrame(Duration.millis(150), new KeyValue(fatherView.layoutYProperty(), next.getY(), Interpolator.LINEAR)),
-                            new KeyFrame(Duration.millis(150), new KeyValue(motherView.layoutXProperty(), next.getX(), Interpolator.LINEAR)),
-                            new KeyFrame(Duration.millis(150), new KeyValue(motherView.layoutYProperty(), next.getY(), Interpolator.LINEAR))
+                            new KeyFrame(Duration.millis(70), new KeyValue(fatherView.layoutXProperty(), next.getX(), Interpolator.LINEAR)),
+                            new KeyFrame(Duration.millis(70), new KeyValue(fatherView.layoutYProperty(), next.getY(), Interpolator.LINEAR)),
+                            new KeyFrame(Duration.millis(70), new KeyValue(motherView.layoutXProperty(), next.getX(), Interpolator.LINEAR)),
+                            new KeyFrame(Duration.millis(70), new KeyValue(motherView.layoutYProperty(), next.getY(), Interpolator.LINEAR))
                     );
 
                     // 'Bloom' animation after a merge
@@ -280,8 +280,8 @@ public class BoardView extends Pane{
                     move.setCycleCount(1);
 
                     move.getKeyFrames().addAll(
-                            new KeyFrame(Duration.millis(150), new KeyValue(view.layoutXProperty(), next.getX(), Interpolator.LINEAR)),
-                            new KeyFrame(Duration.millis(150), new KeyValue(view.layoutYProperty(), next.getY(), Interpolator.LINEAR))
+                            new KeyFrame(Duration.millis(70), new KeyValue(view.layoutXProperty(), next.getX(), Interpolator.LINEAR)),
+                            new KeyFrame(Duration.millis(70), new KeyValue(view.layoutYProperty(), next.getY(), Interpolator.LINEAR))
                     );
 
                     move.play();
