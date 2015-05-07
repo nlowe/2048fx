@@ -130,7 +130,6 @@ public class GameController
      */
     public void takeMove(Direction direction)
     {
-        //TODO: This needs refactored / optimized
 
         // If we're moving towards 0 for a slice, we need to merge left-to-right
         boolean LTR = direction == Direction.NORTH || direction == Direction.WEST;
@@ -245,7 +244,6 @@ public class GameController
      */
     public MoveResult merge(Cell[] source, boolean LTR)
     {
-        //TODO: This needs refactored / optimized
         int totalMerged = 0;
         int totalMergedValue = 0;
 
